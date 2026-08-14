@@ -1,0 +1,628 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#f7f5f0">
+<title>인구 분포 확인 문제</title>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;800&family=Nanum+Myeongjo:wght@400;700;800&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box}
+html,body{margin:0}
+body{background:#f7f5f0;color:#23211c;font-family:'Noto Sans KR',system-ui,sans-serif;-webkit-text-size-adjust:100%}
+a{color:oklch(.5 .13 58);text-decoration:none}
+button{font-family:inherit;border:none;background:none;padding:0;color:inherit;cursor:pointer}
+
+#퀴즈{max-width:560px;margin:0 auto;padding:20px 16px 60px}
+
+.뒤로{font:500 12.5px/1 'Noto Sans KR';color:#8b8578;display:inline-flex;align-items:center;gap:3px}
+.뒤로:hover{color:oklch(.5 .13 58)}
+
+.머리{padding:12px 2px 18px;border-bottom:1px solid #eae5da;margin-bottom:18px}
+.제목{font:800 24px/1.3 'Nanum Myeongjo',serif}
+.안내{font:400 13px/1.6 'Noto Sans KR';color:#8b8578;margin-top:8px}
+
+.카테고리바{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:12px}
+.카테고리{font:500 12.5px/1 'Noto Sans KR';border:1.5px solid #e6e1d6;color:#57534a;border-radius:20px;padding:10px 14px;background:#fffefb;transition:border-color .15s,background .15s,color .15s}
+.카테고리:hover{border-color:#cfc7b4}
+.카테고리 b{font-weight:700;opacity:.55;margin-left:2px}
+.카테고리.활성{background:#23211c;border-color:#23211c;color:#f7f5f0}
+.카테고리.활성 b{opacity:.55}
+
+.상태바{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;background:#fffefb;border:1px solid #e6e1d6;border-radius:14px;padding:12px 16px;margin-bottom:18px}
+.요약{font:500 13px/1 'Noto Sans KR';color:#57534a}
+.요약 b{color:oklch(.5 .13 58)}
+.상태버튼들{display:flex;gap:8px}
+.다시버튼{font:500 12.5px/1 'Noto Sans KR';border:1.5px solid #23211c;color:#23211c;border-radius:20px;padding:9px 14px}
+.더버튼{font:500 12.5px/1 'Noto Sans KR';border:1.5px solid oklch(.58 .13 58);color:oklch(.5 .13 58);border-radius:20px;padding:9px 14px}
+.다시버튼[hidden],.더버튼[hidden]{display:none}
+
+.문제카드{background:#fffefb;border:1px solid #e6e1d6;border-radius:16px;padding:18px 16px;margin-bottom:16px}
+
+.문제머리{display:flex;align-items:flex-start;gap:10px}
+.번호{flex:none;width:27px;height:27px;border-radius:50%;background:#23211c;color:#f7f5f0;display:flex;align-items:center;justify-content:center;font:700 12.5px/1 'Nanum Myeongjo',serif;margin-top:1px}
+.지문{flex:1;font:500 15px/1.55 'Noto Sans KR';padding-top:2px}
+
+.제출버튼{display:none;flex:none;opacity:0;transform:scale(.7);transition:opacity .16s,transform .16s;background:oklch(.58 .13 58);color:#fffefb;font:700 12px/1 'Noto Sans KR';border-radius:20px;padding:8px 13px;margin-top:1px}
+.제출버튼.표시{display:inline-flex}
+.제출버튼.보임{opacity:1;transform:scale(1)}
+.제출버튼:hover{background:oklch(.52 .13 58)}
+
+.설명박스{background:#faf7f0;border:1px solid #eae5da;border-radius:10px;padding:12px 14px;margin:12px 0 0;font:400 13.5px/1.65 'Noto Sans KR';color:#3c3a34}
+.설명박스 p{margin:0}
+.설명박스 p+p{margin-top:8px}
+
+.지도래퍼{border:1px solid #e6e1d6;border-radius:12px;overflow:hidden;background:#fffefb;padding:10px;margin:12px 0 0}
+.지도목록{display:grid;gap:8px}
+.지도목록.칸1{grid-template-columns:1fr}
+.지도목록.칸2{grid-template-columns:repeat(2,1fr)}
+.지도목록 figure{margin:0}
+.지도목록 img{width:100%;height:auto;display:block;border-radius:6px;border:1px solid #eae5da}
+.지도목록 figcaption{text-align:center;font:700 11.5px/1 'Noto Sans KR';color:#8b8578;padding-top:6px}
+
+.보기목록{display:flex;flex-direction:column;gap:9px;margin:14px 0 0}
+.보기{position:relative;display:flex;align-items:center;gap:11px;padding:11px 13px;border:1.5px solid #e6e1d6;border-radius:12px;cursor:pointer;transition:border-color .15s,background .15s}
+.보기:hover{border-color:#cfc7b4}
+.보기입력{position:absolute;opacity:0;width:1px;height:1px;overflow:hidden}
+.보기:focus-within{outline:2px solid oklch(.58 .13 58);outline-offset:2px}
+.보기마커{flex:none;font:700 13.5px/1 'Nanum Myeongjo',serif;color:#8b8578;width:18px}
+.보기글{flex:1;font:400 14px/1.5 'Noto Sans KR'}
+.보기.선택됨{border-color:oklch(.58 .13 58);background:oklch(.97 .025 78)}
+.보기.선택됨 .보기마커{color:oklch(.5 .13 58)}
+.보기.정답{border-color:oklch(.55 .12 152);background:oklch(.96 .035 152)}
+.보기.정답::after{content:'✓';margin-left:auto;padding-left:8px;font:800 14px/1 'Noto Sans KR';color:oklch(.42 .13 152)}
+.보기.오답선택{border-color:#b0503a;background:#fbece6}
+.보기.오답선택::after{content:'✕';margin-left:auto;padding-left:8px;font:800 14px/1 'Noto Sans KR';color:#b0503a}
+.보기목록.잠김{pointer-events:none}
+
+.결과영역{margin:14px 0 0;padding-top:14px;border-top:1px dashed #e6e1d6}
+.결과배지{display:inline-block;font:700 11px/1 'Noto Sans KR';padding:6px 11px;border-radius:20px;margin-bottom:10px}
+.결과배지.맞음{background:oklch(.94 .045 152);color:oklch(.38 .12 152)}
+.결과배지.틀림{background:#fbeae6;color:#a83a2e}
+.정답줄{font:500 13.5px/1.5 'Noto Sans KR';margin:0 0 10px;color:#3c3a34}
+.해설{font:400 13.5px/1.75 'Noto Sans KR';color:#57534a;background:#faf8f3;border-radius:10px;padding:12px 14px}
+.해설 b{display:block;color:#23211c;font-weight:700;margin-bottom:5px;font-size:12px;letter-spacing:.02em}
+
+@media (min-width:760px){
+  #퀴즈{max-width:780px;padding:30px 26px 70px}
+  .제목{font-size:30px}
+  .안내{font-size:14.5px}
+  .카테고리{font-size:13.5px;padding:11px 16px}
+  .문제카드{padding:24px 24px}
+  .번호{width:30px;height:30px;font-size:14px}
+  .지문{font-size:16.5px}
+  .설명박스,.지도래퍼,.보기목록,.결과영역{margin-left:41px}
+  .지도목록.칸2{grid-template-columns:repeat(4,1fr)}
+  .보기글{font-size:15px}
+  .해설{font-size:14.5px}
+}
+</style>
+</head>
+<body>
+
+<div id="퀴즈">
+  <a class="뒤로" href="../index.html">‹ 자료실로</a>
+  <div class="머리">
+    <div class="제목">01. 인구 분포 · 확인 문제</div>
+    <div class="안내">카테고리를 골라 풀어보세요. 답을 고르면 번호 왼쪽에 제출 버튼이 나타나고, 제출하면 정답과 해설을 볼 수 있어요. 한 카테고리에 최대 5문제씩 나오고, 다 풀면 '문제 더 풀기'로 이어서 풀 수 있어요.</div>
+  </div>
+
+  <div class="카테고리바" id="카테고리바"></div>
+
+  <div class="상태바">
+    <span class="요약" id="요약">제출 0 / 5</span>
+    <div class="상태버튼들">
+      <button class="다시버튼" id="다시풀기" hidden>다시 풀기</button>
+      <button class="더버튼" id="문제더풀기" hidden>문제 더 풀기</button>
+    </div>
+  </div>
+
+  <div id="문제목록"></div>
+</div>
+
+<script>
+const 동그라미 = ['①','②','③','④','⑤','⑥'];
+
+const 카테고리목록 = [
+  { key: '요인',    label: '인구 분포의 자연적 요인' },
+  { key: '세계',    label: '세계 인구 분포' },
+  { key: '우리나라', label: '우리나라 인구 분포' }
+];
+
+const 문제전체 = [
+  /* ── 인구 분포의 자연적 요인 ── */
+  {
+    카테고리: '요인',
+    지문: "인구 분포에 영향을 미치는 요인 중 성격이 다른 것은?",
+    보기: ["교통", "기후", "문화", "산업", "정치"],
+    정답: 1,
+    해설: "기후는 지형·식생과 함께 인구 분포에 영향을 주는 자연적 요인이다. 교통, 문화, 산업, 정치는 모두 인문·사회적 요인에 해당한다."
+  },
+  {
+    카테고리: '요인',
+    지문: "인구 분포에 영향을 미치는 요인에 대한 설명으로 옳지 않은 것은?",
+    보기: [
+      "기후, 지형, 식생 등은 자연적 요인에 해당한다.",
+      "경제, 산업, 교통 등은 인문·사회적 요인에 해당한다.",
+      "전쟁, 분쟁이 자주 발생하는 지역은 인구 밀도가 낮다.",
+      "지형이 험준한 산지 지역보다 평야 지역의 인구 밀도가 높다.",
+      "오늘날 인구 분포에 미치는 인문·사회적 요인의 영향력은 줄어들고 있다."
+    ],
+    정답: 4,
+    해설: "과거부터 인구 분포는 기후, 지형 등 자연적 요인의 영향을 많이 받았다. 기후가 온화하고 물이 풍부하며 비옥한 평야 지역에 인구가 밀집하였다. 인문·사회적 요인인 경제, 산업, 교통 등도 인구 분포에 영향을 미치며, 전쟁과 분쟁이 자주 발생하는 지역은 인구 밀도가 낮다. 오늘날에는 산업화와 도시화가 진행되면서 인문·사회적 요인의 영향력이 오히려 커지고 있다."
+  },
+  {
+    카테고리: '요인',
+    지문: "인구 분포에 영향을 미치는 요인에 대한 설명으로 옳지 않은 것은?",
+    보기: [
+      "자연적 요인에는 기후, 지형 등이 있다.",
+      "인문·사회적 요인에는 산업, 문화 등이 있다.",
+      "과거에는 자연적 요인이 인구 분포에 많은 영향을 끼쳤다.",
+      "알프스산맥처럼 해발 고도가 높고 험준한 산지 지역은 인구가 희박하다.",
+      "오늘날 인문·사회적 요인이 인구 분포에 미치는 영향력이 줄어들고 있다.",
+      "교통이 편리하고 교육 시설이 잘 갖추어진 지역에는 인구가 집중되어 있다."
+    ],
+    정답: 4,
+    해설: "인구 분포에 영향을 미치는 인문·사회적 요인은 오늘날에 그 영향력이 커지고 있다."
+  },
+  {
+    카테고리: '요인',
+    지문: "다음 지도와 같은 인구 분포에 영향을 준 요인으로 보기 어려운 것은?",
+    지도: [{ 파일: "img/07-01-world-c.png" }],
+    보기: ["경도", "교통", "기후", "산업", "지형"],
+    정답: 0,
+    해설: "세계 인구 분포에 영향을 미치는 것은 기후, 지형과 같은 자연적 요인과 산업, 교통, 정치 등과 같은 인문·사회적 요인이다. 경도(동서 방향의 위치) 자체는 인구 분포에 직접적인 영향을 주는 요인으로 보기 어렵다."
+  },
+
+  /* ── 세계 인구 분포 ── */
+  {
+    카테고리: '세계',
+    지문: "A ~ E 지역의 인구 분포에 영향을 미치는 요인을 자연적 요인과 인문·사회적 요인으로 옳게 연결한 것은?",
+    지도: [{ 파일: "img/07-01-map-1.jpg" }],
+    보기: [
+      "자연적 요인 B, C — 인문·사회적 요인 A, D, E",
+      "자연적 요인 C, E — 인문·사회적 요인 A, B, D",
+      "자연적 요인 A, B, C — 인문·사회적 요인 D, E",
+      "자연적 요인 A, C, E — 인문·사회적 요인 B, D",
+      "자연적 요인 B, C, E — 인문·사회적 요인 A, D"
+    ],
+    정답: 4,
+    해설: "A는 서부 유럽, B는 사하라 사막, C는 동남아시아, D는 미국 북동부 대서양 연안, E는 브라질의 아마존강 유역이다. A, D는 산업이 발달하여 인구 밀도가 높은 인문·사회적 요인의 영향을 받은 지역이고, C는 벼농사가 발달해 인구가 밀집한 자연적 요인의 영향을 받은 지역이다. B, E는 자연환경이 불리하여 인구가 희박한 자연적 요인의 영향을 받은 지역이다."
+  },
+  {
+    카테고리: '세계',
+    지문: "A~E 지역의 인구 분포 특징에 대한 설명으로 옳은 것은?",
+    지도: [{ 파일: "img/07-01-map-1.jpg" }],
+    보기: [
+      "A는 기온이 너무 높아 인구가 희박하다.",
+      "B는 교통이 편리하고 산업이 발달하여 인구가 밀집하였다.",
+      "C는 연 강수량이 적어 농업 활동이 불리해 인구가 희박하다.",
+      "D는 일자리가 풍부하여 인구가 밀집하였다.",
+      "E는 벼농사가 발달하여 인구가 밀집하였다."
+    ],
+    정답: 3,
+    해설: "미국 북동부 대서양 연안(D)은 산업이 발달하여 일자리가 풍부하고 생활 환경이 편리하여 인구가 밀집하였다. ① 서부 유럽(A)은 산업이 발달하여 인구가 밀집하였다. ② 사하라 사막(B)은 건조 기후가 나타나 농업 활동에 불리하고 물이 부족하여 인구가 희박하다. ③ 동남아시아(C)는 계절풍 기후가 나타나고 평야가 발달해 벼농사에 유리하여 인구가 밀집하였다. ⑤ 브라질의 아마존강 유역(E)은 기온이 너무 높아 인간 활동에 불리하여 인구가 희박하다."
+  },
+  {
+    카테고리: '세계',
+    지문: "(가), (나)에 해당하는 지역만을 지도의 A~E에서 있는 대로 골라 옳게 연결한 것은?",
+    설명박스: [
+      "(가) 일찍이 산업화가 이루어졌으며 일자리가 풍부하고 생활 환경이 좋아 인구가 밀집하였다.",
+      "(나) 계절풍의 영향으로 강수량이 많고, 하천 유역에 넓은 평야가 발달해 있어 벼농사가 유리해 인구가 밀집하였다."
+    ],
+    지도: [{ 파일: "img/07-01-map-2.jpg" }],
+    보기: [
+      "(가) A, B — (나) D",
+      "(가) A, C — (나) E",
+      "(가) A, D — (나) C",
+      "(가) B, E — (나) C",
+      "(가) C, D — (나) E"
+    ],
+    정답: 2,
+    해설: "A는 서부 유럽, B는 사하라 사막, C는 동아시아와 남아시아, D는 미국 북동부 대서양 연안, E는 아마존강 유역이다. (가) 인문·사회적 요인의 영향으로 인구가 밀집한 지역은 A, D이고, (나) 자연적 요인의 영향으로 인구가 밀집한 지역은 C이다."
+  },
+  {
+    카테고리: '세계',
+    지문: "다음 지도에 대한 설명으로 옳지 않은 것은?",
+    지도: [{ 파일: "img/07-01-world-b.jpeg" }],
+    보기: [
+      "인구가 지구상에 골고루 분포하고 있지 않다.",
+      "남반구보다 북반구에 더 많은 인구가 분포한다.",
+      "E 지역은 경제가 발달했기 때문에 인구가 조밀하다.",
+      "가장 많은 인구가 분포하는 지역은 아시아 대륙이다.",
+      "D 지역은 너무 덥고 비가 많이 와서 인구가 희박하다."
+    ],
+    정답: 4,
+    해설: "A는 서부 유럽, B는 사하라 사막, C는 동아시아와 남아시아, D는 알래스카, E는 미국 북동부 대서양 연안, F는 아마존강 유역이다. 알래스카(D)는 연평균 기온이 낮아 인구가 희박한 것이지, 덥고 습해서가 아니다. 인구는 지구상에 고르게 분포하지 않고 특정 지역에 집중되며, 세계 인구의 90%는 북반구에 거주한다. 미국 북동부 대서양 연안(E)은 경제가 발달하여 일자리가 풍부하고 생활 환경이 편리한 지역이므로 인구가 조밀하다. 아시아 대륙에는 세계 인구의 약 60%가 거주한다."
+  },
+  {
+    카테고리: '세계',
+    지문: "다음 지도에 나타난 세계의 인구 분포에 대한 옳은 설명을 <보기>에서 고른 것은?",
+    설명박스: [
+      "ㄱ. 남반구보다 북반구에 인구가 밀집하여 분포한다.",
+      "ㄴ. 세계 인구는 지구상에 불균등하게 분포하고 있다.",
+      "ㄷ. 해안 지역보다 내륙 지역에 인구가 밀집되어 있다.",
+      "ㄹ. 적도 부근이 북반구 중위도 지역보다 인구 밀도가 높다."
+    ],
+    지도: [{ 파일: "img/07-01-world-c.png" }],
+    보기: ["ㄱ, ㄴ", "ㄱ, ㄷ", "ㄴ, ㄷ", "ㄴ, ㄹ", "ㄷ, ㄹ"],
+    정답: 0,
+    해설: "지구상에는 약 74억 명의 사람이 사는데, 고르게 분포하지 않고 특정 지역에 밀집해 있다. 세계 인구의 90% 이상은 육지 면적이 넓은 북반구에 살고 있다. 내륙 지역보다 해안 지역의 인구 밀도가 높다. 적도 부근은 너무 덥기 때문에 인구가 희박하고, 기후가 온화한 북반구 중위도 지역에는 인구가 밀집되어 있다."
+  },
+  {
+    카테고리: '세계',
+    지문: "A~D 지역의 인구 분포에 영향을 준 요인에 대한 옳은 설명만을 <보기>에서 있는 대로 고른 것은?",
+    설명박스: [
+      "ㄱ. A는 일자리가 풍부하고 생활 환경이 편리하다.",
+      "ㄴ. B는 건조 기후가 나타나 인간 거주에 불리하다.",
+      "ㄷ. C는 각종 자원이 풍부해 공업이 발달해 있다.",
+      "ㄹ. D는 한대 기후가 나타나 농업에 불리하다."
+    ],
+    지도: [{ 파일: "img/07-01-world-d.png" }],
+    보기: ["ㄱ, ㄴ", "ㄷ, ㄹ", "ㄱ, ㄴ, ㄷ", "ㄱ, ㄴ, ㄹ", "ㄱ, ㄴ, ㄷ, ㄹ"],
+    정답: 3,
+    해설: "A는 서부 유럽 지역으로 일찍부터 산업이 발달하여 일자리가 풍부하고 생활 환경이 편리해 인구가 밀집해 있다. B는 사하라 사막으로 강수량이 매우 적어 물을 구하기 어려워 인구가 희박하다. D는 캐나다 북부 지역으로 기온이 매우 낮아 농업에 불리해 인구가 희박하다. C는 아마존 분지로 고온 다습하고 열대 밀림이 우거져 있어 인구가 희박한 지역으로, 자원이 풍부해 공업이 발달했다는 설명은 옳지 않다."
+  },
+  {
+    카테고리: '세계',
+    지문: "다음 지도의 A~F 지역을 인구 밀집 지역과 인구 희박 지역으로 구분하여 옳게 연결한 것은?",
+    지도: [{ 파일: "img/07-01-world-e.png" }],
+    보기: [
+      "밀집 A, B, C — 희박 D, E, F",
+      "밀집 A, C, E — 희박 B, D, F",
+      "밀집 B, C, D — 희박 A, E, F",
+      "밀집 B, D, E — 희박 A, C, F",
+      "밀집 C, E, F — 희박 A, B, D"
+    ],
+    정답: 1,
+    해설: "A는 서부 유럽, B는 사하라 사막, C는 동남아시아, D는 오스트레일리아의 내륙 지역, E는 북아메리카 북동부 지역, F는 브라질의 아마존강 유역이다. 인구 밀집 지역은 벼농사가 발달한 동남아시아(C)와 산업이 발달한 서부 유럽(A), 북아메리카 북동부 지역(E)이다. 건조 기후가 나타나는 사하라 사막(B)과 오스트레일리아 내륙(D), 열대 기후가 나타나는 아마존강 유역(F)은 인구 희박 지역이다."
+  },
+  {
+    카테고리: '세계',
+    지문: "다음은 세계의 인구 분포에 대한 설명이다. 밑줄 친 ㉠~㉤ 중 옳지 않은 것은?",
+    설명박스: ["세계의 인구는 지구상에 고르게 분포하지 않고 ㉠ 특정 지역에 집중하여 분포한다. ㉡ 세계 인구의 90% 이상은 북반구에 살고 있으며, ㉢ 특히 북위 20°~40° 지역에 가장 많은 인구가 분포한다. 대륙별로 살펴보면 ㉣ 유럽에 가장 밀집해 있으며 ㉤ 오세아니아에는 인구가 가장 적게 분포한다."],
+    보기: ["㉠", "㉡", "㉢", "㉣", "㉤"],
+    정답: 3,
+    해설: "세계의 인구는 지구상에 고르게 분포하지 않고 특정 지역에 집중하여 분포한다. 세계 인구의 90% 이상은 육지 면적이 넓은 북반구에 살고 있다. 위도별로는 북위 20°~40° 지역에 가장 많은 인구가 분포하고, 적도 부근이나 극지방은 인구가 적게 분포한다. 대륙별로는 중국, 인도, 방글라데시 등지가 있는 아시아에 인구가 가장 밀집해 있다. 오세아니아는 상대적으로 인구가 적게 분포한다."
+  },
+  {
+    카테고리: '세계',
+    지문: "다음은 2010년 세계의 인구와 면적을 대륙별로 나타낸 그래프이다. 이에 대한 설명으로 옳지 않은 것은?",
+    지도: [{ 파일: "img/07-01-chart-continent.jpeg" }],
+    보기: [
+      "세계 인구의 절반 이상은 아시아에 산다.",
+      "남아메리카보다 북아메리카의 인구가 많다.",
+      "오세아니아의 인구는 세계의 1%도 되지 않는다.",
+      "1㎢에 사는 인구수가 가장 적은 대륙은 오세아니아이다.",
+      "남아메리카와 북아메리카의 인구를 합쳐도 아프리카의 인구보다 적다."
+    ],
+    정답: 1,
+    해설: "북아메리카는 남아메리카보다 면적은 넓지만 인구는 적다."
+  },
+  {
+    카테고리: '세계',
+    지문: "세계의 인구 분포에 대한 옳은 설명을 <보기>에서 고른 것은?",
+    설명박스: [
+      "ㄱ. 세계 인구의 90% 이상은 북반구에 살고 있다.",
+      "ㄴ. 적도 부근이나 극지방에는 인구가 적게 분포한다.",
+      "ㄷ. 대륙별로 살펴보면 유럽에 가장 많은 인구가 분포한다.",
+      "ㄹ. 위도별로 살펴보면 북위 40°~60° 지역에 가장 많은 인구가 분포한다."
+    ],
+    보기: ["ㄱ, ㄴ", "ㄱ, ㄷ", "ㄴ, ㄷ", "ㄴ, ㄹ", "ㄷ, ㄹ"],
+    정답: 0,
+    해설: "세계 인구의 90% 이상은 육지 면적이 넓은 북반구에 살고 있다. 적도 부근이나 극지방은 인구가 적게 분포한다. 위도별로 살펴보면 북위 20°~40° 지역에 가장 많은 인구가 분포한다. 대륙별로 살펴보면 중국과 인도를 포함한 아시아에 가장 많은 인구가 분포한다."
+  },
+  {
+    카테고리: '세계',
+    지문: "다음은 세계의 인구 분포에 대한 설명이다. ㉠~㉤에 들어갈 내용으로 옳지 않은 것은?",
+    설명박스: ["세계 인구의 90% 이상은 육지 면적이 넓은 ㉠ 에 살고 있다. 위도별로 보면 ㉡ 의 온화한 기후가 나타나는 지역은 인구 밀도가 높고, ㉢ 은/는 인구 밀도가 낮다. 대륙별로 보면 ㉣ 에 인구가 가장 밀집해 있으며, ㉤ 은/는 인구가 가장 적게 분포한다."],
+    보기: [
+      "㉠ — 북반구",
+      "㉡ — 북위 20°~40°",
+      "㉢ — 적도 부근과 극지방",
+      "㉣ — 아시아",
+      "㉤ — 유럽"
+    ],
+    정답: 4,
+    해설: "세계 인구의 약 90%는 북반구, 약 10%는 남반구에 거주하여 공간상에 불균등하게 분포한다. 위도별로는 북위 20°~40° 지역에 가장 많은 인구가 분포하고, 적도 부근이나 극지방은 인구가 적게 분포한다. 대륙별로는 중국, 인도, 방글라데시 등지가 있는 아시아와 유럽에 인구가 밀집하였다. 인구가 가장 적게 분포하는 대륙은 오세아니아이다."
+  },
+  {
+    카테고리: '세계',
+    지문: "(가), (나)에 해당하는 지역을 지도에서 골라 옳게 연결한 것은?",
+    설명박스: [
+      "(가) 큰 하천이 만든 비옥한 평야 지대는 농업 활동에 유리하여 일찍부터 많은 사람들이 거주하였다.",
+      "(나) 건조한 기후가 나타나는 지역이 국토의 2/3를 차지하고 있어 인구가 희박하다."
+    ],
+    지도: [{ 파일: "img/07-01-world-f.png" }],
+    보기: [
+      "(가) A — (나) B",
+      "(가) A — (나) D",
+      "(가) B — (나) A",
+      "(가) B — (나) C",
+      "(가) C — (나) D"
+    ],
+    정답: 3,
+    해설: "(가)의 큰 하천이 만든 비옥한 평야는 인도(B)에 해당하며, 하천 하류의 평야가 농업에 유리해 인구가 밀집한다. (나)의 국토 2/3가 건조 기후인 지역은 오스트레일리아(C)로, 인구가 희박하다."
+  },
+  {
+    카테고리: '세계',
+    지문: "지도에 표시된 지역의 공통된 인구 분포 특징으로 옳은 것은?",
+    지도: [{ 파일: "img/07-01-world-g.png" }],
+    보기: [
+      "건조 기후 지역으로 인구 밀도가 낮다.",
+      "전쟁이나 분쟁이 자주 발생하여 인구가 희박하다.",
+      "농업 활동에 불리한 기후가 나타나 인구가 희박하다.",
+      "일자리가 풍부하고 생활이 편리해 인구가 밀집되어 있다.",
+      "벼농사에 유리한 계절풍 기후 지역으로 인구 밀도가 높다."
+    ],
+    정답: 2,
+    해설: "지도에 표시된 러시아의 시베리아 지역과 브라질의 아마존강 유역은 농업 활동에 불리한 기후가 나타나 인구가 희박하다."
+  },
+
+  /* ── 우리나라 인구 분포 ── */
+  {
+    카테고리: '우리나라',
+    지문: "지도에 대한 설명 및 추론으로 옳은 것은?",
+    지도: [{ 파일: "img/07-01-korea-a.png" }],
+    보기: [
+      "1940년에는 지형 및 기후 조건이 유리한 북서부 지역에 인구가 밀집하였다.",
+      "1940년에는 태백산맥 일대의 산지 지역과 농어촌 지역에 인구가 밀집하였다.",
+      "2015년에는 수도권, 대도시에 인구가 밀집하였다.",
+      "2015년 수도권에서는 노동력 부족, 농어촌 지역에서는 인구 과밀화 문제가 나타날 것이다.",
+      "2015년은 1940년에 비해 인구가 고르게 분포하고 있다."
+    ],
+    정답: 2,
+    해설: "우리나라의 인구 분포는 산업화가 급격히 이루어진 1960년대 전후로 뚜렷하게 구분된다. 산업화 이전에는 평야가 발달한 남서부 지역에 인구가 밀집하였다. 태백산맥과 같은 산지 지역은 경사가 급하고 기후가 한랭하여 산업화 이전부터 인구가 희박하였다. 1960년대 이후 산업화가 이루어지면서 수도권과 남동 임해 공업 지역에 인구가 집중되었다. 2015년에는 수도권에 전체 인구의 약 50%가 분포할 정도로 인구가 특정 지역에 집중되어 있다."
+  },
+  {
+    카테고리: '우리나라',
+    지문: "지도에 대한 설명으로 옳은 것은?",
+    지도: [{ 파일: "img/07-01-korea-b.png" }],
+    보기: [
+      "1940년에는 대체로 북동부 지역에 인구가 밀집하였다.",
+      "1940년의 인구 분포는 인문·사회적 요인을 많이 받았다.",
+      "2010년에는 수도권과 남동 임해 공업 지역의 인구 밀도가 높다.",
+      "2010년에는 1940년에 비해 지역 간 인구 밀도의 차이가 작아졌다.",
+      "2010년에는 태백산맥, 소백산맥 일대의 산간 지역의 인구 밀도가 높다."
+    ],
+    정답: 2,
+    해설: "1940년에는 기후가 온화하고 넓은 평야가 발달한 남서부 지역에 인구가 밀집하였다. 산업화 이후 이촌 향도 현상으로 수도권, 남동 임해 공업 지역의 인구 밀도가 높아졌다."
+  },
+  {
+    카테고리: '우리나라',
+    지문: "다음은 2015년 우리나라의 인구 분포를 나타낸 것이다. 이에 대한 옳은 설명을 <보기>에서 고른 것은?",
+    설명박스: [
+      "ㄱ. 태백산맥과 소백산맥 일대는 인구 밀도가 낮다.",
+      "ㄴ. 인구 분포에 인문적 요인이 크게 작용하고 있다.",
+      "ㄷ. 농업보다 공업이 발달한 지역의 인구 밀도가 낮다.",
+      "ㄹ. 남동 임해 공업 지역은 최대의 인구 밀집 지역이다."
+    ],
+    지도: [{ 파일: "img/07-01-korea-c.png" }],
+    보기: ["ㄱ, ㄴ", "ㄱ, ㄷ", "ㄴ, ㄷ", "ㄴ, ㄹ", "ㄷ, ㄹ"],
+    정답: 0,
+    해설: "태백산맥과 소백산맥은 해발 고도가 높아 인간 거주에 불리하여 인구 밀도가 낮다. 오늘날 인구 분포에는 경제, 교통, 산업과 같은 인문적 요인이 크게 작용해 수도권과 대도시, 남동 임해 공업 지역과 같이 산업이 발달한 지역에 인구가 밀집하였다. 농업보다 공업이 발달한 지역의 인구 밀도가 높으며, 우리나라 최대의 인구 밀집 지역은 서울을 중심으로 하는 수도권이다."
+  },
+  {
+    카테고리: '우리나라',
+    지문: "다음은 1940년 우리나라의 인구 분포를 나타낸 것이다. 인구 밀도가 높은 지역의 특징으로 옳은 것은?",
+    지도: [{ 파일: "img/07-01-korea-d.png" }],
+    보기: ["기온이 낮다.", "산지가 많다.", "지하자원이 풍부하다.", "벼농사가 발달하였다.", "자연 경관이 뛰어나다."],
+    정답: 3,
+    해설: "1940년 인구 밀집 지역은 기후가 온화하고 평야가 발달한 남서부 지역이었다. 우리나라는 오랫동안 벼농사 중심의 농업 사회였기 때문에 인구 분포가 자연적 요인의 영향을 많이 받았으며, 벼농사에 유리한 지역에 인구가 밀집하였다. 반대로 북동부 지역은 기온이 낮고 산지가 많아 인구가 희박하였다."
+  }
+];
+
+function 셔플(원본배열) {
+  const a = 원본배열.slice();
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
+let 현재카테고리 = 카테고리목록[0].key;
+let 카테고리풀 = [];
+let 표시개수 = 0;
+let 제출됨 = [];
+let 정답수 = 0;
+
+const 카테고리개수 = key => 문제전체.filter(q => q.카테고리 === key).length;
+
+function 카테고리바그리기() {
+  const 칸 = document.getElementById('카테고리바');
+  칸.innerHTML = '';
+  카테고리목록.forEach(c => {
+    const b = document.createElement('button');
+    b.className = '카테고리' + (c.key === 현재카테고리 ? ' 활성' : '');
+    b.innerHTML = c.label + ' <b>' + 카테고리개수(c.key) + '</b>';
+    b.onclick = () => 카테고리선택(c.key);
+    칸.appendChild(b);
+  });
+}
+
+function 문제카드만들기(문제, idx) {
+  const 카드 = document.createElement('div');
+  카드.className = '문제카드';
+
+  const 머리 = document.createElement('div');
+  머리.className = '문제머리';
+
+  const 제출버튼 = document.createElement('button');
+  제출버튼.className = '제출버튼';
+  제출버튼.type = 'button';
+  제출버튼.textContent = '제출';
+
+  const 번호 = document.createElement('span');
+  번호.className = '번호';
+  번호.textContent = idx + 1;
+
+  const 지문 = document.createElement('div');
+  지문.className = '지문';
+  지문.textContent = 문제.지문;
+
+  머리.append(제출버튼, 번호, 지문);
+  카드.appendChild(머리);
+
+  if (문제.설명박스) {
+    const 박스 = document.createElement('div');
+    박스.className = '설명박스';
+    문제.설명박스.forEach(줄 => {
+      const p = document.createElement('p');
+      p.textContent = 줄;
+      박스.appendChild(p);
+    });
+    카드.appendChild(박스);
+  }
+
+  if (문제.지도 && 문제.지도.length) {
+    const 지도칸 = document.createElement('div');
+    지도칸.className = '지도래퍼';
+    const 목록 = document.createElement('div');
+    목록.className = '지도목록 ' + (문제.지도.length > 1 ? '칸2' : '칸1');
+    문제.지도.forEach(m => {
+      const fig = document.createElement('figure');
+      const img = document.createElement('img');
+      img.src = m.파일;
+      img.alt = m.라벨 ? m.라벨 + ' 자료' : '참고 자료';
+      img.loading = 'lazy';
+      fig.appendChild(img);
+      if (m.라벨) {
+        const cap = document.createElement('figcaption');
+        cap.textContent = m.라벨;
+        fig.appendChild(cap);
+      }
+      목록.appendChild(fig);
+    });
+    지도칸.appendChild(목록);
+    카드.appendChild(지도칸);
+  }
+
+  const 보기목록 = document.createElement('div');
+  보기목록.className = '보기목록';
+  const 보기라벨들 = [];
+
+  문제.보기.forEach((글, i) => {
+    const 라벨 = document.createElement('label');
+    라벨.className = '보기';
+
+    const 입력 = document.createElement('input');
+    입력.type = 'radio';
+    입력.name = '문제' + idx;
+    입력.value = i;
+    입력.className = '보기입력';
+
+    const 마커 = document.createElement('span');
+    마커.className = '보기마커';
+    마커.textContent = 동그라미[i];
+
+    const 글칸 = document.createElement('span');
+    글칸.className = '보기글';
+    글칸.textContent = 글;
+
+    라벨.append(입력, 마커, 글칸);
+    보기목록.appendChild(라벨);
+    보기라벨들.push(라벨);
+
+    입력.addEventListener('change', () => {
+      보기라벨들.forEach(l => l.classList.remove('선택됨'));
+      라벨.classList.add('선택됨');
+      제출버튼.classList.add('표시');
+      requestAnimationFrame(() => 제출버튼.classList.add('보임'));
+    });
+  });
+  카드.appendChild(보기목록);
+
+  const 결과 = document.createElement('div');
+  결과.className = '결과영역';
+  결과.hidden = true;
+
+  const 배지 = document.createElement('span');
+  배지.className = '결과배지';
+
+  const 정답줄 = document.createElement('p');
+  정답줄.className = '정답줄';
+
+  const 해설칸 = document.createElement('div');
+  해설칸.className = '해설';
+  const 해설제목 = document.createElement('b');
+  해설제목.textContent = '해설';
+  const 해설글 = document.createElement('p');
+  해설글.textContent = 문제.해설;
+  해설글.style.margin = '0';
+  해설칸.append(해설제목, 해설글);
+
+  결과.append(배지, 정답줄, 해설칸);
+  카드.appendChild(결과);
+
+  제출버튼.addEventListener('click', () => {
+    const 선택된 = 보기목록.querySelector('input:checked');
+    if (!선택된) return;
+    const 고른값 = parseInt(선택된.value, 10);
+    const 맞음 = 고른값 === 문제.정답;
+
+    보기라벨들.forEach((l, i) => {
+      l.querySelector('input').disabled = true;
+      if (i === 문제.정답) l.classList.add('정답');
+      else if (i === 고른값) l.classList.add('오답선택');
+    });
+    보기목록.classList.add('잠김');
+
+    배지.textContent = 맞음 ? '정답이에요' : '아쉬워요, 오답이에요';
+    배지.className = '결과배지 ' + (맞음 ? '맞음' : '틀림');
+    정답줄.innerHTML = '정답은 <b>' + 동그라미[문제.정답] + '번</b>이에요.';
+    결과.hidden = false;
+    제출버튼.remove();
+
+    if (!제출됨[idx]) {
+      제출됨[idx] = true;
+      if (맞음) 정답수++;
+      요약갱신();
+    }
+  });
+
+  return 카드;
+}
+
+function 카테고리선택(key) {
+  현재카테고리 = key;
+  카테고리풀 = 셔플(문제전체.filter(q => q.카테고리 === key));
+  표시개수 = Math.min(5, 카테고리풀.length);
+  제출됨 = new Array(표시개수).fill(false);
+  정답수 = 0;
+
+  카테고리바그리기();
+  const 목록칸 = document.getElementById('문제목록');
+  목록칸.innerHTML = '';
+  for (let i = 0; i < 표시개수; i++) 목록칸.appendChild(문제카드만들기(카테고리풀[i], i));
+  요약갱신();
+  scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function 문제더풀기() {
+  const 새표시개수 = Math.min(표시개수 + 5, 카테고리풀.length);
+  const 목록칸 = document.getElementById('문제목록');
+  for (let i = 표시개수; i < 새표시개수; i++) {
+    제출됨.push(false);
+    목록칸.appendChild(문제카드만들기(카테고리풀[i], i));
+  }
+  표시개수 = 새표시개수;
+  요약갱신();
+}
+
+function 요약갱신() {
+  const 제출수 = 제출됨.filter(Boolean).length;
+  document.getElementById('요약').innerHTML = '제출 <b>' + 제출수 + '</b> / ' + 표시개수 +
+    (제출수 ? '  ·  정답 <b>' + 정답수 + '</b>개' : '');
+  document.getElementById('다시풀기').hidden = 제출수 === 0;
+  document.getElementById('문제더풀기').hidden = !(제출수 === 표시개수 && 표시개수 < 카테고리풀.length);
+}
+
+document.getElementById('다시풀기').onclick = () => 카테고리선택(현재카테고리);
+document.getElementById('문제더풀기').onclick = 문제더풀기;
+
+카테고리선택(현재카테고리);
+</script>
+</body>
+</html>
