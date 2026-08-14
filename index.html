@@ -285,7 +285,11 @@ function 접기연결(단추, 속, 처음열림, 열때할일) {
 
 const 자료수 = 차 => (차.자료 || []).length;
 const 소자료수 = 소 => 차시목록(소).filter(보임).reduce((n, 차) => n + 자료수(차), 0);
-const 중자료수 = 중 => (중.소단원 || []).filter(보임).reduce((n, 소) => n + 소자료수(소), 0);
+/* 소단원 없이 중단원에 자료를 바로 매단 얕은 구조(예: 사회 수업방)도 그대로 읽습니다 */
+const 중자료수 = 중 => {
+  const 소들 = (중.소단원 || []).filter(보임);
+  return 소들.length ? 소들.reduce((n, 소) => n + 소자료수(소), 0) : (중.자료 || []).length;
+};
 
 function 준비중(글 = '자료 준비 중') {
   const p = document.createElement('div');
@@ -331,7 +335,8 @@ function 준비중(글 = '자료 준비 중') {
     중칸.appendChild(중속);
     접기연결(중단추, 중속, true);
 
-    (중.소단원 || []).filter(보임).forEach(소 => {
+    const 소들 = (중.소단원 || []).filter(보임);
+    if (소들.length) 소들.forEach(소 => {
       /* ── 소단원 ── */
       const 소칸 = document.createElement('div');
       소칸.className = '소';
@@ -390,6 +395,16 @@ function 준비중(글 = '자료 준비 중') {
       });
       중속.appendChild(소칸);
     });
+    else {
+      /* 소단원 없이 중단원에 자료를 바로 매단 얕은 구조(예: 사회 수업방) */
+      const 자료들 = 중.자료 || [];
+      if (자료들[0]) 중속.appendChild(미리보기만들기(자료들[0]));
+      자료들.forEach(자 => {
+        중속.appendChild(자료줄만들기(자));
+        if (자 && 자.파일) 자료색인.set(자.파일, { 자, 위치: 중.제목 || '' });
+      });
+      if (!자료들.length) 중속.appendChild(준비중());
+    }
     속.appendChild(중칸);
   });
 
