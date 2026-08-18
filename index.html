@@ -337,7 +337,7 @@ function 준비중(글 = '자료 준비 중') {
     const 중속 = document.createElement('div');
     중속.className = '중속';
     중칸.appendChild(중속);
-    접기연결(중단추, 중속, true);
+    접기연결(중단추, 중속, 중.번호 === '01');
 
     const 소들 = (중.소단원 || []).filter(보임);
     if (소들.length) 소들.forEach(소 => {
