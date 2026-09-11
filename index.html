@@ -413,9 +413,8 @@ function 준비중(글 = '자료 준비 중') {
   });
 
   box.appendChild(속);
-  접기연결(줄, 속, i === 0);
+  접기연결(줄, 속, false);
   줄.addEventListener('click', () => box.classList.toggle('열림', !속.classList.contains('접힘')));
-  box.classList.toggle('열림', i === 0);
   자리.appendChild(box);
 });
 
