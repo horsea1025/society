@@ -744,7 +744,9 @@
       const W = canvas.width;
       return {
         donghaeBaseX: 180,
-        seonamBaseX: W - 180,
+        // [수정] 서·남해안 기선을 갯벌 바로 옆(예전 W-180)이 아니라 다도해 너머 '최외곽 섬'까지 밀어서,
+        // 직선기선이 실제로 가장 바깥 섬을 잇는다는 개념과 갯벌·기점 그래픽이 겹치던 문제를 함께 해결합니다.
+        seonamBaseX: W - 350,
         dokdoBaseX: W - 320,
         dokdo12X: W - 150
       };
@@ -771,7 +773,9 @@
       const getTargets = () => {
          const g = geo();
          if (currentMode === 'normal') return { nm12: g.donghaeBaseX + 120, nm200: g.donghaeBaseX + 380 };
-         return { nm12: g.seonamBaseX - 120, nm200: g.seonamBaseX - 380 };
+         // [수정] 기선이 밀려난 만큼 12해리·EEZ도 같은 간격으로 따라 밀리되, 화면이 좁을 때 왼쪽 밖으로
+         // 잘려 나가지 않도록 최소 위치를 둡니다 (12해리가 EEZ보다 항상 오른쪽에 오도록 여백 유지).
+         return { nm12: Math.max(g.seonamBaseX - 120, 70), nm200: Math.max(g.seonamBaseX - 380, 30) };
       };
 
       pins = [
@@ -1264,7 +1268,9 @@
       ctx.fillStyle = '#78716c'; ctx.beginPath(); ctx.moveTo(landX, dyn.seaY); ctx.lineTo(mudX, dyn.seaY + 5); ctx.lineTo(mudX, dyn.seaY + 25); ctx.lineTo(landX, dyn.seaY + 30); ctx.closePath(); ctx.fill();
       ctx.fillStyle = '#f5f5f4'; ctx.font = 'bold 10px sans-serif'; ctx.fillText('광활한 갯벌', landX - 50, dyn.seaY + 18);
 
-      const isl1 = canvas.width - 240; const isl2 = canvas.width - 320;
+      // [수정] 기선(최외곽 섬)이 더 멀리 밀려난 만큼, 갯벌과 기점 사이에 있던 다도해 섬들도
+      // 갯벌 쪽으로 당겨서 갯벌→섬 군락→최외곽 섬(기점) 순서와 간격이 겹치지 않게 합니다.
+      const isl1 = canvas.width - 195; const isl2 = canvas.width - 250;
       ctx.fillStyle = '#15803d'; ctx.beginPath(); ctx.moveTo(isl1 - 15, dyn.seaY); ctx.lineTo(isl1 - 5, dyn.seaY - 15*dyn.hScale); ctx.lineTo(isl1 + 8, dyn.seaY - 12*dyn.hScale); ctx.lineTo(isl1 + 15, dyn.seaY); ctx.fill();
       ctx.fillStyle = '#166534'; ctx.beginPath(); ctx.moveTo(isl2 - 20, dyn.seaY); ctx.lineTo(isl2 - 10, dyn.seaY - 22*dyn.hScale); ctx.lineTo(isl2 + 5, dyn.seaY - 18*dyn.hScale); ctx.lineTo(isl2 + 20, dyn.seaY); ctx.fill();
       
