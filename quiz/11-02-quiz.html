@@ -1,0 +1,483 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#f7f5f0">
+<title>독도 확인 문제</title>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;800&family=Nanum+Myeongjo:wght@400;700;800&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box}
+html,body{margin:0}
+body{background:#f7f5f0;color:#23211c;font-family:'Noto Sans KR',system-ui,sans-serif;-webkit-text-size-adjust:100%}
+a{color:oklch(.5 .13 58);text-decoration:none}
+button{font-family:inherit;border:none;background:none;padding:0;color:inherit;cursor:pointer}
+
+#퀴즈{max-width:560px;margin:0 auto;padding:20px 16px 60px}
+
+.뒤로{font:500 12.5px/1 'Noto Sans KR';color:#8b8578;display:inline-flex;align-items:center;gap:3px}
+.뒤로:hover{color:oklch(.5 .13 58)}
+
+.머리{padding:12px 2px 18px;border-bottom:1px solid #eae5da;margin-bottom:18px}
+.제목{font:800 24px/1.3 'Nanum Myeongjo',serif}
+.안내{font:400 13px/1.6 'Noto Sans KR';color:#8b8578;margin-top:8px}
+
+.카테고리바{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:12px}
+.카테고리{font:500 12.5px/1 'Noto Sans KR';border:1.5px solid #e6e1d6;color:#57534a;border-radius:20px;padding:10px 14px;background:#fffefb;transition:border-color .15s,background .15s,color .15s}
+.카테고리:hover{border-color:#cfc7b4}
+.카테고리 b{font-weight:700;opacity:.55;margin-left:2px}
+.카테고리.활성{background:#23211c;border-color:#23211c;color:#f7f5f0}
+.카테고리.활성 b{opacity:.55}
+
+.상태바{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;background:#fffefb;border:1px solid #e6e1d6;border-radius:14px;padding:12px 16px;margin-bottom:18px}
+.요약{font:500 13px/1 'Noto Sans KR';color:#57534a}
+.요약 b{color:oklch(.5 .13 58)}
+.상태버튼들{display:flex;gap:8px}
+.다시버튼{font:500 12.5px/1 'Noto Sans KR';border:1.5px solid #23211c;color:#23211c;border-radius:20px;padding:9px 14px}
+.더버튼{font:500 12.5px/1 'Noto Sans KR';border:1.5px solid oklch(.58 .13 58);color:oklch(.5 .13 58);border-radius:20px;padding:9px 14px}
+.다시버튼[hidden],.더버튼[hidden]{display:none}
+
+.문제카드{background:#fffefb;border:1px solid #e6e1d6;border-radius:16px;padding:18px 16px;margin-bottom:16px}
+
+.문제머리{display:flex;align-items:flex-start;gap:10px}
+.번호{flex:none;width:27px;height:27px;border-radius:50%;background:#23211c;color:#f7f5f0;display:flex;align-items:center;justify-content:center;font:700 12.5px/1 'Nanum Myeongjo',serif;margin-top:1px}
+.지문{flex:1;font:500 15px/1.55 'Noto Sans KR';padding-top:2px}
+
+.제출버튼{display:none;flex:none;opacity:0;transform:scale(.7);transition:opacity .16s,transform .16s;background:oklch(.58 .13 58);color:#fffefb;font:700 12px/1 'Noto Sans KR';border-radius:20px;padding:8px 13px;margin-top:1px}
+.제출버튼.표시{display:inline-flex}
+.제출버튼.보임{opacity:1;transform:scale(1)}
+.제출버튼:hover{background:oklch(.52 .13 58)}
+
+.설명박스{background:#faf7f0;border:1px solid #eae5da;border-radius:10px;padding:12px 14px;margin:12px 0 0;font:400 13.5px/1.65 'Noto Sans KR';color:#3c3a34}
+.설명박스 p{margin:0}
+.설명박스 p+p{margin-top:8px}
+.설명박스 cite{display:block;margin-top:6px;text-align:right;font:400 12px/1 'Noto Sans KR';font-style:normal;color:#8b8578}
+
+.지도래퍼{border:1px solid #e6e1d6;border-radius:12px;overflow:hidden;background:#fffefb;padding:10px;margin:12px 0 0}
+.지도목록{display:grid;gap:8px}
+.지도목록.칸1{grid-template-columns:1fr}
+.지도목록.칸2{grid-template-columns:repeat(2,1fr)}
+.지도목록 figure{margin:0}
+.지도목록 img{width:100%;height:auto;display:block;border-radius:6px;border:1px solid #eae5da}
+.지도목록 figcaption{text-align:center;font:700 11.5px/1 'Noto Sans KR';color:#8b8578;padding-top:6px}
+
+.보기목록{display:flex;flex-direction:column;gap:9px;margin:14px 0 0}
+.보기{position:relative;display:flex;align-items:center;gap:11px;padding:11px 13px;border:1.5px solid #e6e1d6;border-radius:12px;cursor:pointer;transition:border-color .15s,background .15s}
+.보기:hover{border-color:#cfc7b4}
+.보기입력{position:absolute;opacity:0;width:1px;height:1px;overflow:hidden}
+.보기:focus-within{outline:2px solid oklch(.58 .13 58);outline-offset:2px}
+.보기마커{flex:none;font:700 13.5px/1 'Nanum Myeongjo',serif;color:#8b8578;width:18px}
+.보기글{flex:1;font:400 14px/1.5 'Noto Sans KR'}
+.보기.선택됨{border-color:oklch(.58 .13 58);background:oklch(.97 .025 78)}
+.보기.선택됨 .보기마커{color:oklch(.5 .13 58)}
+.보기.정답{border-color:oklch(.55 .12 152);background:oklch(.96 .035 152)}
+.보기.정답::after{content:'✓';margin-left:auto;padding-left:8px;font:800 14px/1 'Noto Sans KR';color:oklch(.42 .13 152)}
+.보기.오답선택{border-color:#b0503a;background:#fbece6}
+.보기.오답선택::after{content:'✕';margin-left:auto;padding-left:8px;font:800 14px/1 'Noto Sans KR';color:#b0503a}
+.보기목록.잠김{pointer-events:none}
+
+.결과영역{margin:14px 0 0;padding-top:14px;border-top:1px dashed #e6e1d6}
+.결과배지{display:inline-block;font:700 11px/1 'Noto Sans KR';padding:6px 11px;border-radius:20px;margin-bottom:10px}
+.결과배지.맞음{background:oklch(.94 .045 152);color:oklch(.38 .12 152)}
+.결과배지.틀림{background:#fbeae6;color:#a83a2e}
+.정답줄{font:500 13.5px/1.5 'Noto Sans KR';margin:0 0 10px;color:#3c3a34}
+.해설{font:400 13.5px/1.75 'Noto Sans KR';color:#57534a;background:#faf8f3;border-radius:10px;padding:12px 14px}
+.해설 b{display:block;color:#23211c;font-weight:700;margin-bottom:5px;font-size:12px;letter-spacing:.02em}
+
+@media (min-width:760px){
+  #퀴즈{max-width:780px;padding:30px 26px 70px}
+  .제목{font-size:30px}
+  .안내{font-size:14.5px}
+  .카테고리{font-size:13.5px;padding:11px 16px}
+  .문제카드{padding:24px 24px}
+  .번호{width:30px;height:30px;font-size:14px}
+  .지문{font-size:16.5px}
+  .설명박스,.지도래퍼,.보기목록,.결과영역{margin-left:41px}
+  .지도목록.칸2{grid-template-columns:repeat(2,1fr)}
+  .보기글{font-size:15px}
+  .해설{font-size:14.5px}
+}
+</style>
+</head>
+<body>
+
+<div id="퀴즈">
+  <a class="뒤로" href="../index.html">‹ 자료실로</a>
+  <div class="머리">
+    <div class="제목">02. 독도 · 확인 문제</div>
+    <div class="안내">카테고리를 골라 풀어보세요. 답을 고르면 번호 왼쪽에 제출 버튼이 나타나고, 제출하면 정답과 해설을 볼 수 있어요. 한 카테고리에 최대 5문제씩 나오고, 다 풀면 '문제 더 풀기'로 이어서 풀 수 있어요.</div>
+  </div>
+
+  <div class="카테고리바" id="카테고리바"></div>
+
+  <div class="상태바">
+    <span class="요약" id="요약">제출 0 / 5</span>
+    <div class="상태버튼들">
+      <button class="다시버튼" id="다시풀기" hidden>다시 풀기</button>
+      <button class="더버튼" id="문제더풀기" hidden>문제 더 풀기</button>
+    </div>
+  </div>
+
+  <div id="문제목록"></div>
+</div>
+
+<script>
+const 동그라미 = ['①','②','③','④','⑤'];
+
+const 카테고리목록 = [
+  { key: '위치환경', label: '독도의 위치와 자연환경' },
+  { key: '가치',   label: '독도가 지닌 다양한 가치' },
+  { key: '수호',   label: '독도를 지켜온 우리의 노력' }
+];
+
+const 문제전체 = [
+  /* ── 독도의 위치와 자연환경 ── */
+  {
+    카테고리: '위치환경',
+    지문: "독도에 대한 설명으로 옳지 않은 것은?",
+    보기: [
+      "행정 구역상 경상북도 울릉군에 속해 있는 섬이다.",
+      "우리나라는 독도에 대한 영토 주권을 행사하고 있다.",
+      "일본은 자국의 교과서에 왜곡된 내용을 실어 일본 국민의 여론을 몰아가고 있다.",
+      "일본은 독도를 영토 분쟁 지역으로 만들어 국제 사법 재판소를 통해 해결하고자 한다.",
+      "현재 독도에는 우리나라 군인이 해안 경비 활동을 하고 있다."
+    ],
+    정답: 4,
+    해설: "독도는 우리나라가 영토 주권을 행사하고 있으며, 독도에는 군인이 아니라 우리 경찰(독도 경비대)이 해안 경비 활동을 하고 있다. 우리는 독도를 지키기 위해 자발적이고 꾸준한 관심을 가져야 하며, 지리적·역사적 관점에서 독도의 중요성을 인식해야 한다."
+  },
+  {
+    카테고리: '위치환경',
+    지문: "독도에 대한 설명으로 옳지 않은 것은?",
+    보기: [
+      "화산 폭발로 형성된 섬이다.",
+      "대륙의 영향을 받는 기후 특성이 나타난다.",
+      "한류와 난류가 만나 어족 자원이 풍부하다.",
+      "주변 바다에는 해양 심층수가 풍부한 편이다.",
+      "주변의 깊은 바다에 메탄 하이드레이트가 분포한다."
+    ],
+    정답: 1,
+    해설: "독도는 대륙성 기후가 아니라 해양성 기후 특성이 강하게 나타난다. 독도는 과거 해저에서 분출한 용암에 의해 형성된 화산섬이며, 주변 바다는 한류와 난류가 만나는 조경 수역이 형성되어 수산 자원이 풍부하다."
+  },
+  {
+    카테고리: '위치환경',
+    지문: "다음 고문헌에 기록된 내용을 통해 알 수 있는 사실로 옳지 않은 것은?",
+    설명박스: ["“우산도(독도)와 무릉도(울릉도) 두 섬은 울진현의 정 동쪽 바다 가운데에 있다. 두 섬 간의 거리는 그리 멀지 않아 바람이 불어 청명한 날에는 서로 볼 수 있다.”<cite>— 『세종실록지리지』</cite>"],
+    보기: [
+      "독도의 옛 이름은 우산도이다.",
+      "울릉도와 독도는 동해에 있다.",
+      "울릉도와 독도는 별개의 섬이다.",
+      "울릉도와 독도는 조선의 땅으로 인식되었다.",
+      "날씨가 맑으면 울릉도에서 독도를 볼 수 있다."
+    ],
+    정답: 1,
+    해설: "제시된 고문헌은 『세종실록지리지』이다. 기록을 통해 우산도(독도)와 무릉도(울릉도)가 별개의 섬이고 조선의 땅으로 인식되었음을 알 수 있다. 또한 독도와 울릉도 사이의 거리가 가까워 날씨가 맑은 날에는 울릉도에서 독도가 보인다는 것을 알 수 있다. 울릉도와 독도는 울진현의 동쪽 바다, 즉 동해에 위치하고 있다고 기록되어 있다."
+  },
+  {
+    카테고리: '위치환경',
+    지문: "독도에 대한 옳은 설명을 <보기>에서 있는 대로 고른 것은?",
+    설명박스: ["<보기><br>ㄱ. 경상북도 울릉군 울릉읍에 속해 있다.<br>ㄴ. 우리나라의 가장 동쪽에 위치한 섬이다.<br>ㄷ. 동도와 서도, 89개의 부속 도서로 이루어졌다."],
+    보기: ["ㄱ", "ㄴ, ㄷ", "ㄱ, ㄴ", "ㄱ, ㄷ", "ㄱ, ㄴ, ㄷ"],
+    정답: 4,
+    해설: "독도는 우리나라의 영토 중 가장 동쪽에 위치하고 있으며, 행정 구역상 경상북도 울릉군 울릉읍 독도리에 속한다. 독도는 동도와 서도, 89개의 부속 도서로 이루어져 있다. ㄱ, ㄴ, ㄷ 모두 옳은 설명이다."
+  },
+  {
+    카테고리: '위치환경',
+    지문: "다음은 국토 탐방으로 독도를 다녀온 학생의 일기이다. 밑줄 친 ㉠~㉤ 내용 중 옳지 않은 것은?",
+    설명박스: ["사진에서만 보던 독도를 직접 보니 감회가 새로웠다. ㉠ 독도는 울릉도에서 동남쪽으로 배를 타고 도착할 수 있었다. ㉡ 독도에는 해양 경찰이 상주하여 지키고 있었다. ㉢ 독도는 화산 활동으로 만들어진 섬으로 동도와 서도로 나뉜다. ㉣ 연평균 기온은 비교적 온난한 편이며, 연 강수량은 적은 편이다. ㉤ 독도에는 괭이갈매기, 곰솔 등 육지에서 보기 힘든 동식물들이 서식하고 있다고 한다."],
+    보기: ["㉠", "㉡", "㉢", "㉣", "㉤"],
+    정답: 3,
+    해설: "독도는 해양성 기후의 영향으로 연평균 기온은 비교적 온난하지만, 연 강수량은 1,300mm 안팎으로 비와 눈이 내리는 날이 잦아 강수량이 많은 편이다."
+  },
+
+  /* ── 독도가 지닌 다양한 가치 ── */
+  {
+    카테고리: '가치',
+    지문: "독도의 영역적 가치에 대한 옳은 설명을 <보기>에서 고른 것은?",
+    설명박스: ["<보기><br>ㄱ. 섬 전체가 천연 보호 구역으로 지정되었다.<br>ㄴ. 조경 수역이 형성되어 각종 수산 자원이 풍부하다.<br>ㄷ. 우리나라 영토의 동쪽 끝을 확정 짓는 기준이 된다.<br>ㄹ. 항공 및 방어 기지로서 군사적 요충지가 될 가능성이 높다."],
+    보기: ["ㄱ, ㄴ", "ㄱ, ㄷ", "ㄴ, ㄷ", "ㄴ, ㄹ", "ㄷ, ㄹ"],
+    정답: 4,
+    해설: "독도는 위치적 특성으로 항공 기지, 방어 기지로서 국가 안보에 필요한 역할을 수행하는 군사적 요충지가 될 가능성이 높다. 또한 독도는 우리나라 영토의 동쪽 끝을 확정 짓는 기준이 되며, 독도를 기점으로 한 12해리가 우리나라의 영해에 해당한다. ㄱ. 천연 보호 구역으로 지정된 것은 독도의 환경·생태적 가치에 해당한다. ㄴ. 조경 수역이 형성되어 각종 수산 자원이 풍부한 것은 독도의 경제적 가치에 해당한다."
+  },
+  {
+    카테고리: '가치',
+    지문: "다음에서 설명하는 자원은?",
+    설명박스: ["독도 주변 해저에 다량 매장되어 있는 에너지 자원이다. 천연가스가 해저의 저온·고압 상태에서 물 분자와 결합하여 형성된 고체 에너지로, 불을 붙이면 타는 성질을 가지고 있어 일명 '불타는 얼음'이라고 부른다."],
+    보기: ["석유", "석탄", "보크사이트", "바이오 에탄올", "메탄 하이드레이트"],
+    정답: 4,
+    해설: "독도 주변 해저에는 미래 에너지 자원으로 주목받는 메탄 하이드레이트가 매장되어 있다. 메탄 하이드레이트는 천연가스의 주성분인 메탄이 해저의 저온·고압 상태에서 물 분자와 결합하여 형성된 고체 에너지이다."
+  },
+  {
+    카테고리: '가치',
+    지문: "자료가 나타내는 독도의 가치로 가장 적절한 것은?",
+    지도: [{ 파일: "img/11-02-dokdo-species.png", 라벨: "독도에서 볼 수 있는 해국(왼쪽)과 괭이갈매기(오른쪽)" }],
+    보기: [
+      "우리나라 영해의 동쪽 끝을 확정짓는다.",
+      "배타적 경제 수역 설정의 기준점이 된다.",
+      "주변 바다에 수산 자원 및 에너지 자원이 풍부하다.",
+      "조류, 식물, 곤충 등 290여 종의 다양한 동식물이 서식한다.",
+      "국가 안보에 필요한 역할을 수행하는 군사적 요충지가 될 수 있다."
+    ],
+    정답: 3,
+    해설: "자료가 나타내는 독도의 가치는 환경 및 생태적 가치이다. 독도에는 해국, 괭이갈매기를 비롯해 식물·조류·곤충 등 290여 종의 다양한 동식물이 서식하며, 남북으로 이동하는 철새들이 쉬어 가는 피난처 역할도 하고 있다."
+  },
+  {
+    카테고리: '가치',
+    지문: "독도의 영역적 가치에 대한 옳은 설명을 <보기>에서 있는 대로 고른 것은?",
+    설명박스: ["<보기><br>ㄱ. 조경 수역이 형성되어 각종 수산 자원이 풍부하다.<br>ㄴ. 우리나라 영토의 동쪽 끝을 확정 짓는 기준이 된다.<br>ㄷ. 국가 안보에 필요한 역할을 수행하는 군사적 요충지가 될 가능성이 높다.<br>ㄹ. 해저 화산의 형성과 진화 과정을 살펴볼 수 있는 세계적인 지질 유적이다."],
+    보기: ["ㄱ, ㄴ", "ㄱ, ㄷ", "ㄴ, ㄷ", "ㄴ, ㄹ", "ㄷ, ㄹ"],
+    정답: 2,
+    해설: "독도는 섬이 많지 않은 동해에서 육지와 멀리 떨어져 있어 우리나라 영해의 동쪽 끝을 확정 짓는 중요한 기준이 되며, 위치적 특성으로 항공 기지, 방어 기지로서 국가 안보에 필요한 역할을 수행하는 군사적 요충지가 될 가능성이 높다. ㄱ. 독도의 경제적 가치, ㄹ. 독도의 환경·생태적 가치에 해당한다."
+  },
+  {
+    카테고리: '가치',
+    지문: "그림은 독도 주변 바다의 자원을 나타낸 것이다. A, B에 대한 설명으로 옳은 것은?",
+    지도: [{ 파일: "img/11-02-water-resources.png", 라벨: "독도 주변 바다의 자원(A: 해양 심층수, B: 메탄 하이드레이트)" }],
+    보기: [
+      "A는 수심 200m 아래의 바닷물이다.",
+      "A는 얼음 형태지만 불이 붙는 성질을 가지고 있다.",
+      "B는 병원균이 거의 없어 식수, 식품, 의약품의 원료로 사용한다.",
+      "B는 석탄이 낮은 온도와 높은 압력을 받아 형성된 고체 에너지이다.",
+      "A는 메탄 하이드레이트, B는 해양 심층수이다."
+    ],
+    정답: 0,
+    해설: "A는 해양 심층수, B는 메탄 하이드레이트이다. 해양 심층수는 수심 200m 아래에 분포하며 미생물이 거의 없어 식수나 의약품, 화장품의 원료로 활용된다. 메탄 하이드레이트는 천연가스가 해저의 저온·고압 상태에서 물 분자와 결합하여 형성된 고체 에너지이다."
+  },
+
+  /* ── 독도를 지켜온 우리의 노력 ── */
+  {
+    카테고리: '수호',
+    지문: "독도 홍보물에 들어갈 적절한 내용을 <보기>에서 고른 것은?",
+    설명박스: ["<보기><br>ㄱ. 현재 독도는 대한민국이 영토 주권을 행사하고 있습니다.<br>ㄴ. 시마네 현 고시에서도 독도가 우리 땅임을 인정하고 있습니다.<br>ㄷ. 독도는 러일 전쟁 이후부터 우리나라의 영토로 편입되었습니다.<br>ㄹ. 많은 지리서와 고지도에 독도가 우리 영토로 기록되어 있습니다."],
+    보기: ["ㄱ, ㄴ", "ㄱ, ㄹ", "ㄴ, ㄷ", "ㄴ, ㄹ", "ㄷ, ㄹ"],
+    정답: 1,
+    해설: "ㄴ. 일본은 오히려 시마네 현 고시를 통해 독도가 자국의 땅이라고 일방적으로 주장하고 있다. ㄷ. 독도는 러일 전쟁 이후가 아니라, 서기 512년 신라가 우산국을 편입하면서부터 우리나라의 영토가 되었다."
+  },
+  {
+    카테고리: '수호',
+    지문: "독도에 대한 설명으로 옳지 않은 것은?",
+    보기: [
+      "독도는 울릉도 주민들의 일상생활의 범위 안에 있었다.",
+      "독도에는 경비를 서는 군인들 이외에 주민은 거주하지 않는다.",
+      "독도는 512년 신라가 우산국을 편입하면서부터 우리나라의 영토가 되었다.",
+      "예부터 울릉도 주민들은 울릉도의 부속 도서로서 독도를 인식하고 있었다.",
+      "독도에는 각종 주민 생활 시설과 경비 활동을 위한 시설이 갖추어져 있다."
+    ],
+    정답: 1,
+    해설: "독도에는 1965년부터 주민이 거주하였으며, 현재도 주민과 독도 경비 대원 등이 함께 상주하고 있다."
+  }
+];
+
+function 셔플(원본배열) {
+  const a = 원본배열.slice();
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
+let 현재카테고리 = 카테고리목록[0].key;
+let 카테고리풀 = [];
+let 표시개수 = 0;
+let 제출됨 = [];
+let 정답수 = 0;
+
+const 카테고리개수 = key => 문제전체.filter(q => q.카테고리 === key).length;
+
+function 카테고리바그리기() {
+  const 칸 = document.getElementById('카테고리바');
+  칸.innerHTML = '';
+  카테고리목록.forEach(c => {
+    const b = document.createElement('button');
+    b.className = '카테고리' + (c.key === 현재카테고리 ? ' 활성' : '');
+    b.innerHTML = c.label + ' <b>' + 카테고리개수(c.key) + '</b>';
+    b.onclick = () => 카테고리선택(c.key);
+    칸.appendChild(b);
+  });
+}
+
+function 문제카드만들기(문제, idx) {
+  const 카드 = document.createElement('div');
+  카드.className = '문제카드';
+
+  const 머리 = document.createElement('div');
+  머리.className = '문제머리';
+
+  const 제출버튼 = document.createElement('button');
+  제출버튼.className = '제출버튼';
+  제출버튼.type = 'button';
+  제출버튼.textContent = '제출';
+
+  const 번호 = document.createElement('span');
+  번호.className = '번호';
+  번호.textContent = idx + 1;
+
+  const 지문 = document.createElement('div');
+  지문.className = '지문';
+  지문.textContent = 문제.지문;
+
+  머리.append(제출버튼, 번호, 지문);
+  카드.appendChild(머리);
+
+  if (문제.설명박스) {
+    const 박스 = document.createElement('div');
+    박스.className = '설명박스';
+    문제.설명박스.forEach(줄 => {
+      const p = document.createElement('p');
+      p.innerHTML = 줄;
+      박스.appendChild(p);
+    });
+    카드.appendChild(박스);
+  }
+
+  if (문제.지도 && 문제.지도.length) {
+    const 지도칸 = document.createElement('div');
+    지도칸.className = '지도래퍼';
+    const 목록 = document.createElement('div');
+    목록.className = '지도목록 ' + (문제.지도.length > 1 ? '칸2' : '칸1');
+    문제.지도.forEach(m => {
+      const fig = document.createElement('figure');
+      const img = document.createElement('img');
+      img.src = m.파일;
+      img.alt = m.라벨 ? m.라벨 + ' 자료' : '참고 자료';
+      img.loading = 'lazy';
+      fig.appendChild(img);
+      if (m.라벨) {
+        const cap = document.createElement('figcaption');
+        cap.textContent = m.라벨;
+        fig.appendChild(cap);
+      }
+      목록.appendChild(fig);
+    });
+    지도칸.appendChild(목록);
+    카드.appendChild(지도칸);
+  }
+
+  const 보기목록 = document.createElement('div');
+  보기목록.className = '보기목록';
+  const 보기라벨들 = [];
+
+  문제.보기.forEach((글, i) => {
+    const 라벨 = document.createElement('label');
+    라벨.className = '보기';
+
+    const 입력 = document.createElement('input');
+    입력.type = 'radio';
+    입력.name = '문제' + idx;
+    입력.value = i;
+    입력.className = '보기입력';
+
+    const 마커 = document.createElement('span');
+    마커.className = '보기마커';
+    마커.textContent = 동그라미[i];
+
+    const 글칸 = document.createElement('span');
+    글칸.className = '보기글';
+    글칸.textContent = 글;
+
+    라벨.append(입력, 마커, 글칸);
+    보기목록.appendChild(라벨);
+    보기라벨들.push(라벨);
+
+    입력.addEventListener('change', () => {
+      보기라벨들.forEach(l => l.classList.remove('선택됨'));
+      라벨.classList.add('선택됨');
+      제출버튼.classList.add('표시');
+      requestAnimationFrame(() => 제출버튼.classList.add('보임'));
+    });
+  });
+  카드.appendChild(보기목록);
+
+  const 결과 = document.createElement('div');
+  결과.className = '결과영역';
+  결과.hidden = true;
+
+  const 배지 = document.createElement('span');
+  배지.className = '결과배지';
+
+  const 정답줄 = document.createElement('p');
+  정답줄.className = '정답줄';
+
+  const 해설칸 = document.createElement('div');
+  해설칸.className = '해설';
+  const 해설제목 = document.createElement('b');
+  해설제목.textContent = '해설';
+  const 해설글 = document.createElement('p');
+  해설글.textContent = 문제.해설;
+  해설글.style.margin = '0';
+  해설칸.append(해설제목, 해설글);
+
+  결과.append(배지, 정답줄, 해설칸);
+  카드.appendChild(결과);
+
+  제출버튼.addEventListener('click', () => {
+    const 선택된 = 보기목록.querySelector('input:checked');
+    if (!선택된) return;
+    const 고른값 = parseInt(선택된.value, 10);
+    const 맞음 = 고른값 === 문제.정답;
+
+    보기라벨들.forEach((l, i) => {
+      l.querySelector('input').disabled = true;
+      if (i === 문제.정답) l.classList.add('정답');
+      else if (i === 고른값) l.classList.add('오답선택');
+    });
+    보기목록.classList.add('잠김');
+
+    배지.textContent = 맞음 ? '정답이에요' : '아쉬워요, 오답이에요';
+    배지.className = '결과배지 ' + (맞음 ? '맞음' : '틀림');
+    정답줄.innerHTML = '정답은 <b>' + 동그라미[문제.정답] + '번</b>이에요.';
+    결과.hidden = false;
+    제출버튼.remove();
+
+    if (!제출됨[idx]) {
+      제출됨[idx] = true;
+      if (맞음) 정답수++;
+      요약갱신();
+    }
+  });
+
+  return 카드;
+}
+
+function 카테고리선택(key) {
+  현재카테고리 = key;
+  카테고리풀 = 셔플(문제전체.filter(q => q.카테고리 === key));
+  표시개수 = Math.min(5, 카테고리풀.length);
+  제출됨 = new Array(표시개수).fill(false);
+  정답수 = 0;
+
+  카테고리바그리기();
+  const 목록칸 = document.getElementById('문제목록');
+  목록칸.innerHTML = '';
+  for (let i = 0; i < 표시개수; i++) 목록칸.appendChild(문제카드만들기(카테고리풀[i], i));
+  요약갱신();
+  scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function 문제더풀기() {
+  const 새표시개수 = Math.min(표시개수 + 5, 카테고리풀.length);
+  const 목록칸 = document.getElementById('문제목록');
+  for (let i = 표시개수; i < 새표시개수; i++) {
+    제출됨.push(false);
+    목록칸.appendChild(문제카드만들기(카테고리풀[i], i));
+  }
+  표시개수 = 새표시개수;
+  요약갱신();
+}
+
+function 요약갱신() {
+  const 제출수 = 제출됨.filter(Boolean).length;
+  document.getElementById('요약').innerHTML = '제출 <b>' + 제출수 + '</b> / ' + 표시개수 +
+    (제출수 ? '  ·  정답 <b>' + 정답수 + '</b>개' : '');
+  document.getElementById('다시풀기').hidden = 제출수 === 0;
+  document.getElementById('문제더풀기').hidden = !(제출수 === 표시개수 && 표시개수 < 카테고리풀.length);
+}
+
+document.getElementById('다시풀기').onclick = () => 카테고리선택(현재카테고리);
+document.getElementById('문제더풀기').onclick = 문제더풀기;
+
+카테고리선택(현재카테고리);
+</script>
+</body>
+</html>
