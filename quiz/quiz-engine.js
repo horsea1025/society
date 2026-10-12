@@ -1,6 +1,11 @@
 /* 확인 문제 공용 엔진
    단원 페이지(07-01-quiz.html 등)에는 문제 데이터만 두고, 동작은 모두 이 파일이 맡습니다.
-   사용법: 퀴즈시작({ 단원, 단원명, 제목, 한번에, 지도열, 카테고리목록, 문제전체 }) */
+   사용법: 퀴즈시작({ 단원, 단원명, 제목, 한번에, 지도열, 카테고리목록, 문제전체 })
+
+   선택 옵션 (필요한 페이지에서만 켭니다)
+   · 설명박스HTML: true — 설명박스 줄 안의 <br> <u> <b> <cite> <table> 같은 태그를 그대로 표시합니다.
+   · 지도원본크기: true — 지도·표 그림을 칸 너비로 늘리지 않고 원래 크기(칸보다 크면 칸 너비)로 가운데에 보여 줍니다.
+   · 문제의 지도칸수: 1 또는 2 — 그림이 여러 장일 때 한 줄에 놓을 그림 수를 문제마다 정합니다. */
 (function () {
   'use strict';
 
@@ -31,17 +36,22 @@
     return el;
   }
 
-  function 설명박스만들기(문제) {
+  function 설명박스만들기(문제, HTML로) {
     if (!문제.설명박스) return null;
     const 박스 = 요소('div', '설명박스');
-    문제.설명박스.forEach(줄 => 박스.appendChild(요소('p', '', 줄)));
+    문제.설명박스.forEach(줄 => {
+      const p = 요소('p', '');
+      if (HTML로) p.innerHTML = 줄; else p.textContent = 줄;
+      박스.appendChild(p);
+    });
     return 박스;
   }
 
   function 지도만들기(문제, 바로불러오기) {
     if (!(문제.지도 && 문제.지도.length)) return null;
     const 래퍼 = 요소('div', '지도래퍼');
-    const 목록 = 요소('div', '지도목록 ' + (문제.지도.length > 1 ? '칸2' : '칸1'));
+    const 칸수 = 문제.지도칸수 || (문제.지도.length > 1 ? 2 : 1);
+    const 목록 = 요소('div', '지도목록 ' + (칸수 === 2 ? '칸2' : '칸1'));
     문제.지도.forEach(m => {
       const fig = document.createElement('figure');
       const img = document.createElement('img');
@@ -68,8 +78,11 @@
     const 카테고리목록 = 설정.카테고리목록;
     const 문제전체 = 설정.문제전체;
 
+    const 설명박스HTML = !!설정.설명박스HTML;
+
     const 루트 = document.getElementById('퀴즈');
     if (설정.지도열) 루트.style.setProperty('--지도열', String(설정.지도열));
+    if (설정.지도원본크기) 루트.classList.add('지도원본');
 
     루트.innerHTML = `
       <a class="뒤로" href="../index.html">‹ 자료실로</a>
@@ -202,7 +215,7 @@
       머리.append(제출버튼, 요소('span', '번호', String(idx + 1)), 요소('div', '지문', 문제.지문));
       카드.appendChild(머리);
 
-      const 박스 = 설명박스만들기(문제);
+      const 박스 = 설명박스만들기(문제, 설명박스HTML);
       if (박스) 카드.appendChild(박스);
       const 지도 = 지도만들기(문제, false);
       if (지도) 카드.appendChild(지도);
@@ -337,7 +350,7 @@
       머리.append(요소('span', '번호', String(번호)), 요소('div', '지문', 문제.지문));
       카드.appendChild(머리);
 
-      const 박스 = 설명박스만들기(문제);
+      const 박스 = 설명박스만들기(문제, 설명박스HTML);
       if (박스) 카드.appendChild(박스);
       const 지도 = 지도만들기(문제, true);
       if (지도) 카드.appendChild(지도);
