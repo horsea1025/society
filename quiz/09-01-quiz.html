@@ -1,0 +1,725 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#f7f5f0">
+<title>농업 생산의 기업화와 세계화 확인 문제</title>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;800&family=Nanum+Myeongjo:wght@400;700;800&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box}
+html,body{margin:0}
+body{background:#f7f5f0;color:#23211c;font-family:'Noto Sans KR',system-ui,sans-serif;-webkit-text-size-adjust:100%}
+a{color:oklch(.5 .13 58);text-decoration:none}
+button{font-family:inherit;border:none;background:none;padding:0;color:inherit;cursor:pointer}
+
+#퀴즈{max-width:560px;margin:0 auto;padding:20px 16px 60px}
+
+.뒤로{font:500 12.5px/1 'Noto Sans KR';color:#8b8578;display:inline-flex;align-items:center;gap:3px}
+.뒤로:hover{color:oklch(.5 .13 58)}
+
+.머리{padding:12px 2px 18px;border-bottom:1px solid #eae5da;margin-bottom:18px}
+.제목{font:800 24px/1.3 'Nanum Myeongjo',serif}
+.안내{font:400 13px/1.6 'Noto Sans KR';color:#8b8578;margin-top:8px}
+
+.카테고리바{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:12px}
+.카테고리{font:500 12.5px/1 'Noto Sans KR';border:1.5px solid #e6e1d6;color:#57534a;border-radius:20px;padding:10px 14px;background:#fffefb;transition:border-color .15s,background .15s,color .15s}
+.카테고리:hover{border-color:#cfc7b4}
+.카테고리 b{font-weight:700;opacity:.55;margin-left:2px}
+.카테고리.활성{background:#23211c;border-color:#23211c;color:#f7f5f0}
+.카테고리.활성 b{opacity:.55}
+
+.상태바{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;background:#fffefb;border:1px solid #e6e1d6;border-radius:14px;padding:12px 16px;margin-bottom:18px}
+.요약{font:500 13px/1 'Noto Sans KR';color:#57534a}
+.요약 b{color:oklch(.5 .13 58)}
+.상태버튼들{display:flex;gap:8px}
+.다시버튼{font:500 12.5px/1 'Noto Sans KR';border:1.5px solid #23211c;color:#23211c;border-radius:20px;padding:9px 14px}
+.더버튼{font:500 12.5px/1 'Noto Sans KR';border:1.5px solid oklch(.58 .13 58);color:oklch(.5 .13 58);border-radius:20px;padding:9px 14px}
+.다시버튼[hidden],.더버튼[hidden]{display:none}
+
+.문제카드{background:#fffefb;border:1px solid #e6e1d6;border-radius:16px;padding:18px 16px;margin-bottom:16px}
+
+.문제머리{display:flex;align-items:flex-start;gap:10px}
+.번호{flex:none;width:27px;height:27px;border-radius:50%;background:#23211c;color:#f7f5f0;display:flex;align-items:center;justify-content:center;font:700 12.5px/1 'Nanum Myeongjo',serif;margin-top:1px}
+.지문{flex:1;font:500 15px/1.55 'Noto Sans KR';padding-top:2px}
+
+.제출버튼{display:none;flex:none;opacity:0;transform:scale(.7);transition:opacity .16s,transform .16s;background:oklch(.58 .13 58);color:#fffefb;font:700 12px/1 'Noto Sans KR';border-radius:20px;padding:8px 13px;margin-top:1px}
+.제출버튼.표시{display:inline-flex}
+.제출버튼.보임{opacity:1;transform:scale(1)}
+.제출버튼:hover{background:oklch(.52 .13 58)}
+
+.설명박스{background:#faf7f0;border:1px solid #eae5da;border-radius:10px;padding:12px 14px;margin:12px 0 0;font:400 13.5px/1.65 'Noto Sans KR';color:#3c3a34}
+.설명박스 p{margin:0}
+.설명박스 p+p{margin-top:8px}
+.설명박스 cite{display:block;margin-top:6px;text-align:right;font:400 12px/1 'Noto Sans KR';font-style:normal;color:#8b8578}
+.설명박스 table{width:100%;border-collapse:collapse;margin:2px 0;font-size:13px;line-height:1.55}
+.설명박스 th,.설명박스 td{border:1px solid #d9d2c0;padding:7px 9px;text-align:left;vertical-align:middle}
+.설명박스 th{background:#f1ece0;font-weight:700;text-align:center}
+
+.지도래퍼{border:1px solid #e6e1d6;border-radius:12px;overflow:hidden;background:#fffefb;padding:10px;margin:12px 0 0}
+.지도목록{display:grid;gap:8px}
+.지도목록.칸1{grid-template-columns:1fr}
+.지도목록.칸2{grid-template-columns:repeat(2,1fr)}
+.지도목록 figure{margin:0}
+.지도목록 img{max-width:100%;width:auto;height:auto;display:block;margin:0 auto;border-radius:6px;border:1px solid #eae5da}
+.지도목록 figcaption{text-align:center;font:700 11.5px/1 'Noto Sans KR';color:#8b8578;padding-top:6px}
+
+.보기목록{display:flex;flex-direction:column;gap:9px;margin:14px 0 0}
+.보기{position:relative;display:flex;align-items:center;gap:11px;padding:11px 13px;border:1.5px solid #e6e1d6;border-radius:12px;cursor:pointer;transition:border-color .15s,background .15s}
+.보기:hover{border-color:#cfc7b4}
+.보기입력{position:absolute;opacity:0;width:1px;height:1px;overflow:hidden}
+.보기:focus-within{outline:2px solid oklch(.58 .13 58);outline-offset:2px}
+.보기마커{flex:none;font:700 13.5px/1 'Nanum Myeongjo',serif;color:#8b8578;width:18px}
+.보기글{flex:1;font:400 14px/1.5 'Noto Sans KR'}
+.보기.선택됨{border-color:oklch(.58 .13 58);background:oklch(.97 .025 78)}
+.보기.선택됨 .보기마커{color:oklch(.5 .13 58)}
+.보기.정답{border-color:oklch(.55 .12 152);background:oklch(.96 .035 152)}
+.보기.정답::after{content:'✓';margin-left:auto;padding-left:8px;font:800 14px/1 'Noto Sans KR';color:oklch(.42 .13 152)}
+.보기.오답선택{border-color:#b0503a;background:#fbece6}
+.보기.오답선택::after{content:'✕';margin-left:auto;padding-left:8px;font:800 14px/1 'Noto Sans KR';color:#b0503a}
+.보기목록.잠김{pointer-events:none}
+
+.결과영역{margin:14px 0 0;padding-top:14px;border-top:1px dashed #e6e1d6}
+.결과배지{display:inline-block;font:700 11px/1 'Noto Sans KR';padding:6px 11px;border-radius:20px;margin-bottom:10px}
+.결과배지.맞음{background:oklch(.94 .045 152);color:oklch(.38 .12 152)}
+.결과배지.틀림{background:#fbeae6;color:#a83a2e}
+.정답줄{font:500 13.5px/1.5 'Noto Sans KR';margin:0 0 10px;color:#3c3a34}
+.해설{font:400 13.5px/1.75 'Noto Sans KR';color:#57534a;background:#faf8f3;border-radius:10px;padding:12px 14px}
+.해설 b{display:block;color:#23211c;font-weight:700;margin-bottom:5px;font-size:12px;letter-spacing:.02em}
+
+@media (min-width:760px){
+  #퀴즈{max-width:780px;padding:30px 26px 70px}
+  .제목{font-size:30px}
+  .안내{font-size:14.5px}
+  .카테고리{font-size:13.5px;padding:11px 16px}
+  .문제카드{padding:24px 24px}
+  .번호{width:30px;height:30px;font-size:14px}
+  .지문{font-size:16.5px}
+  .설명박스,.지도래퍼,.보기목록,.결과영역{margin-left:41px}
+  .지도목록.칸2{grid-template-columns:repeat(2,1fr)}
+  .보기글{font-size:15px}
+  .해설{font-size:14.5px}
+}
+</style>
+</head>
+<body>
+
+<div id="퀴즈">
+  <a class="뒤로" href="../index.html">‹ 자료실로</a>
+  <div class="머리">
+    <div class="제목">01. 농업 생산의 기업화와 세계화 · 확인 문제</div>
+    <div class="안내">카테고리를 골라 풀어보세요. 답을 고르면 번호 왼쪽에 제출 버튼이 나타나고, 제출하면 정답과 해설을 볼 수 있어요. 한 카테고리에 최대 5문제씩 나오고, 다 풀면 '문제 더 풀기'로 이어서 풀 수 있어요.</div>
+  </div>
+
+  <div class="카테고리바" id="카테고리바"></div>
+
+  <div class="상태바">
+    <span class="요약" id="요약">제출 0 / 5</span>
+    <div class="상태버튼들">
+      <button class="다시버튼" id="다시풀기" hidden>다시 풀기</button>
+      <button class="더버튼" id="문제더풀기" hidden>문제 더 풀기</button>
+    </div>
+  </div>
+
+  <div id="문제목록"></div>
+</div>
+
+<script>
+const 동그라미 = ['①','②','③','④','⑤'];
+
+const 카테고리목록 = [
+  { key: '기업적농업', label: '농업의 세계화와 기업적 농업' },
+  { key: '다국적농업', label: '다국적 농업 기업의 활동' },
+  { key: '구조변화',   label: '농업 생산 구조의 변화' },
+  { key: '소비변화',   label: '농작물 소비 특성의 변화와 영향' },
+  { key: '자급률',     label: '우리나라의 곡물 자급률' }
+];
+
+const 문제전체 = [
+  /* ── 농업의 세계화와 기업적 농업 ── */
+  {
+    카테고리: '기업적농업',
+    지문: "농업의 세계화에 대한 설명으로 옳지 않은 것은?",
+    보기: [
+      "소규모의 자급적 농업 형태로 이루어지고 있다.",
+      "다국적 기업이 생산·가공·유통에 참여하고 있다.",
+      "농업 시장이 개방되고 자유 무역이 확대되고 있다.",
+      "전 세계를 대상으로 농작물의 생산이 이루어지고 있다.",
+      "세계의 여러 국가는 농업 경쟁력을 높이기 위해 다양한 종류의 작물을 재배하고 있다."
+    ],
+    정답: 0,
+    해설: "기업적 농업 지역에서 대량 생산되는 농작물은 가격이 저렴하기 때문에 농작물을 소규모로 생산하는 국가에 큰 타격을 주고 있다. 그 결과 세계의 여러 국가는 농업 경쟁력을 높이기 위해 한 종류의 곡물을 재배하는 농업에서 벗어나 다양한 종류의 원예 작물이나 기호 작물을 재배하는 등 농업 생산의 다각화에 힘쓰고 있다. 따라서 소규모의 자급적 농업 형태로 이루어진다는 설명은 옳지 않다."
+  },
+  {
+    카테고리: '기업적농업',
+    지문: "농업의 세계화 배경으로 적절하지 않은 것은?",
+    보기: [
+      "경제 성장",
+      "교통·통신의 발달",
+      "생활 수준의 향상",
+      "농산물의 생산량 감소",
+      "다양한 농산물에 대한 수요 증가"
+    ],
+    정답: 3,
+    해설: "교통·통신의 발달로 지역 간 교류가 증가하고 경제 성장으로 생활 수준이 향상되면서 다양한 농산물에 대한 수요가 증가하였다. 이로 인해 전 세계를 대상으로 농작물의 생산이 이루어지는 등 농업의 세계화가 이루어지고 있다. 농산물의 생산량 감소는 농업 세계화의 배경이 아니다."
+  },
+  {
+    카테고리: '기업적농업',
+    지문: "농업 생산의 기업화에 대한 내용으로 옳지 않은 것은?",
+    보기: [
+      "농업 생산이 세계적인 규모로 이루어지고 있다.",
+      "상업적 농업의 발달이 농업 생산의 기업화를 가져왔다.",
+      "농기계와 화학 비료를 사용하는 농업으로 변하고 있다.",
+      "인간의 노동력에 의존하는 농업 형태가 활기를 띠고 있다.",
+      "경제 활동의 세계화로 농업 생산의 기업화가 이루어지고 있다."
+    ],
+    정답: 3,
+    해설: "인간의 노동력에 의존하여 소규모로 이루어지던 농업은 농기계와 화학 비료를 사용하는 대규모 기업적 농업으로 변화하고 있다."
+  },
+  {
+    카테고리: '기업적농업',
+    지문: "A, B 지역에서 주로 이루어지는 농업의 공통된 특징으로 옳은 것은?",
+    지도: [{ 파일: "img/09-01-map-corporate-farming.png" }],
+    보기: [
+      "대부분 소규모로 이루어진다.",
+      "주로 인간의 노동력에 의존하여 이루어진다.",
+      "생활 수준이 향상되면서 수요가 감소하였다.",
+      "대규모 농업 기업을 통해 이루어지는 경우가 많다.",
+      "주로 다품종 소량 생산으로 가격이 비싼 농산물을 생산한다."
+    ],
+    정답: 3,
+    해설: "기업적 농업은 자본과 기술력을 갖춘 큰 규모의 농업 기업이 농작물을 대량으로 생산하여 가격 경쟁력을 확보하는 형식으로 이루어진다. 기업적 농업은 농기계와 화학 비료를 사용하여 대규모로 이루어지며, 대규모 농업 기업이 농작물의 생산에서부터 수확한 농산물의 가공 및 상품화 과정까지 모두 담당하는 경우가 많다."
+  },
+  {
+    카테고리: '기업적농업',
+    지문: "빈칸에 들어갈 용어에 대한 옳은 설명을 <보기>에서 고른 것은?",
+    지도: [{ 파일: "img/09-01-photo-large-farm.png", 라벨: "해외에 진출한 우리나라 기업의 농장 모습" }],
+    설명박스: [
+      "경제 활동의 세계화가 진행되고 상업적 농업이 발달함에 따라, 소규모로 이루어지던 농업은 농기계와 화학 비료를 사용하여 대규모로 이루어지는 <span style='white-space:nowrap'>[&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;]</span>(으)로 변화하고 있다.",
+      "&lt;보기&gt;<br>ㄱ. 자본과 기술력보다는 노동력이 더 중요하다.<br>ㄴ. 농작물을 대량으로 생산하여 가격 경쟁력을 확보하려고 한다.<br>ㄷ. 농작물의 가격, 생산 구조, 소비 부문에 거의 영향을 미치지 않는다.<br>ㄹ. 농작물의 생산에서부터 수확한 농작물을 가공하고 상품화하기까지의 전 과정을 담당한다."
+    ],
+    보기: ["ㄱ, ㄴ", "ㄱ, ㄷ", "ㄴ, ㄷ", "ㄴ, ㄹ", "ㄷ, ㄹ"],
+    정답: 3,
+    해설: "빈칸에 들어갈 용어는 기업적 농업이다. 대규모 농업 기업은 농작물을 대량으로 생산하여 가격 경쟁력을 확보하려고 한다. 또한 농작물의 생산에서부터 수확한 농작물을 가공하고 상품화하기까지의 전 과정을 담당하는 경우가 많다. ㄱ. 기업적 농업은 농기계와 화학 비료를 사용하는 등 자본과 기술력을 바탕으로 이루어진다. ㄷ. 대규모 기업의 활동은 세계 농산물의 가격뿐만 아니라 농작물의 생산 구조와 소비 부문에 많은 영향을 미친다."
+  },
+  {
+    카테고리: '기업적농업',
+    지문: "밑줄 친 부분에 들어갈 내용으로 가장 적절한 것은?",
+    설명박스: [
+      "• 가윤: 여기에 있는 밀가루는 대부분 미국, 캐나다산 밀로 만들었네요. 그리고 국내산 밀을 사용한 밀가루보다 가격이 저렴해요. 왜 그런 거죠?<br>• 엄마: 이 나라들은 우리나라에 비해 <span style='white-space:nowrap'>(&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;)</span> 때문이야."
+    ],
+    보기: [
+      "임금이 저렴하기",
+      "자급적 농업이 발달했기",
+      "밀 재배에 더 많은 노동력을 이용하기",
+      "기계를 이용해 대규모로 농작물을 재배하기",
+      "화학 비료를 적게 사용하거나 유기농으로 재배하기"
+    ],
+    정답: 3,
+    해설: "미국과 캐나다 등 기업적 농업이 발달한 지역은 광대한 농지에서 농기계와 화학 비료를 사용하여 대규모로 농업이 이루어진다. 따라서 적은 노동력으로 광대한 농지를 경작할 수 있기 때문에 노동 생산성이 매우 높은 편이며, 생산 비용을 좀 더 낮추어 가격 경쟁력을 확보할 수 있다."
+  },
+  {
+    카테고리: '기업적농업',
+    지문: "기업적 목축에 대한 옳은 설명을 <보기>에서 고른 것은?",
+    설명박스: [
+      "&lt;보기&gt;<br>ㄱ. 장거리 수송이 가능해지면서 발달하였다.<br>ㄴ. 육류와 양모에 대한 수요가 감소하면서 나타났다.<br>ㄷ. 오스트레일리아, 미국 등의 초원 지대에서 활발하게 이루어진다.<br>ㄹ. 소규모로 이루어지며, 생산된 축산물은 대부분 농가에서 직접 소비한다."
+    ],
+    보기: ["ㄱ, ㄴ", "ㄱ, ㄷ", "ㄴ, ㄷ", "ㄴ, ㄹ", "ㄷ, ㄹ"],
+    정답: 1,
+    해설: "기업적 목축은 대규모 목장을 마련하고 가축을 사육하는 방식이다. 오스트레일리아, 미국, 아르헨티나의 초원(스텝) 지역에서는 대규모의 기업적 목축 지대가 나타난다. ㄴ. 육류와 양모에 대한 수요가 증가하고, 냉동선의 발명으로 장거리 수송이 가능해지면서 기업적 목축이 발달하였다. ㄹ. 기업적 목축 지역에서 대규모로 생산된 축산물은 전 세계로 수출된다."
+  },
+
+  /* ── 다국적 농업 기업의 활동 ── */
+  {
+    카테고리: '다국적농업',
+    지문: "다음 글을 통해 알 수 있는 내용으로 옳은 것은?",
+    설명박스: [
+      "D 기업은 필리핀, 콜롬비아 등 세계 곳곳에 대규모의 농장을 운영하며 바나나를 재배한다. 현지 노동자들을 고용하여 바나나를 수확하고, 농장 근처에 있는 공장까지 기계를 이용하여 운반한다. 공장에서 바나나를 세척하고 포장하면 선박, 항공 등을 이용하여 세계 여러 지역에 수출한다. 우리나라에서도 D 기업의 바나나를 마트에서 쉽게 볼 수 있다."
+    ],
+    보기: [
+      "자급적 농업이 이루어지고 있다.",
+      "농장은 대부분 온대 기후 지역에 위치한다.",
+      "바나나 생산에 많은 자본과 기술을 투입하여 비싼 가격에 판매한다.",
+      "D 기업과 같은 기업의 활동이 많아질수록 우리나라의 식량 자급률이 높아질 것이다.",
+      "D 기업의 농업 활동이 확대되면 소규모로 농작물을 재배하는 생산자는 타격을 받을 수 있다."
+    ],
+    정답: 4,
+    해설: "대규모 다국적 농업 기업이 생산한 값싼 농산물이 대량으로 수입되면 소규모로 농작물을 재배하는 생산자가 타격을 입을 수 있고, 이로 인해 우리나라의 식량 자급률도 낮아질 수 있다. 바나나는 필리핀, 콜롬비아 등 열대 기후 지역에서 재배되며, 기업적 농업은 대량 생산으로 가격 경쟁력을 확보한다."
+  },
+  {
+    카테고리: '다국적농업',
+    지문: "밑줄 친 ㉠~㉤에 대한 설명으로 옳은 것을 두 가지 고른 것은?",
+    설명박스: [
+      "대규모로 농산물을 생산하는 ㉠ <u>대규모 농업 회사</u>는 세계 농산물의 가격과 ㉡ <u>가공식품의 가격에 많은 영향</u>을 끼친다. 그뿐만 아니라 ㉢ <u>농작물의 생산 구조</u>와 ㉣ <u>토지 이용</u>, ㉤ <u>소비 특성</u>에도 영향을 끼친다.",
+      "㉠ ― 개발 도상국에 본사가 만들어진다.<br>㉡ ― 회사가 가공 및 상품화 과정까지 담당하는 경우가 많기 때문이다.<br>㉢ ― 가족 노동력을 중심으로 한 자급자족 형태이다.<br>㉣ ― 다양한 작물을 소규모로 재배한다.<br>㉤ ― 소비자들은 다양한 농산물을 쉽게 구매할 수 있게 되었다."
+    ],
+    보기: ["㉠, ㉡", "㉡, ㉤", "㉢, ㉣", "㉠, ㉤", "㉢, ㉤"],
+    정답: 1,
+    해설: "㉡ 대규모 농업 회사는 농산물의 가공 및 상품화 과정까지 담당하는 경우가 많아 가공식품의 가격에도 영향을 준다. ㉤ 농업의 세계화로 소비자들은 다양한 농산물을 쉽게 구매할 수 있게 되었다. ㉠ 본사는 주로 선진국에 위치한다. ㉢ 판매를 통해 이익을 추구하는 상업적 농업 형태이다. ㉣ 다양한 작물을 대량으로 재배한다."
+  },
+  {
+    카테고리: '다국적농업',
+    지문: "지도는 어떤 농업 기업의 글로벌 네트워크와 제품 판매 국가를 나타낸 것이다. 이러한 기업의 특징으로 옳지 않은 것은?",
+    지도: [{ 파일: "img/09-01-map-agri-company-a.png" }],
+    보기: [
+      "전 세계를 대상으로 농산물을 판매한다.",
+      "주로 개발 도상국에 진출하여 농장을 운영한다.",
+      "농작물의 생산, 유통, 가공에 이르는 전 과정을 담당한다.",
+      "공정 과정이 까다로워 생산된 작물의 가격이 비싼 편이다.",
+      "세계 농산물의 가격이나 생산 구조 및 소비 부문에 많은 영향을 끼친다."
+    ],
+    정답: 3,
+    해설: "다국적 농업 기업은 국제적 분업 체계와 대량 생산 체계를 갖추고 있어 값싼 농산물을 대량으로 생산하고 공급할 수 있으므로 가격 경쟁력을 가진다."
+  },
+  {
+    카테고리: '다국적농업',
+    지문: "그림과 같이 운영되는 기업에 대한 설명으로 옳지 않은 것은?",
+    지도: [{ 파일: "img/09-01-map-agri-company-b.png" }],
+    보기: [
+      "개발 도상국에 진출하여 상업적 농업을 확대시킨다.",
+      "상품 작물 재배를 위해 플랜테이션 방식을 이용한다.",
+      "농작물의 생산, 가공, 유통까지의 전 과정을 담당한다.",
+      "전 세계 시장을 대상으로 농작물을 생산하고 판매한다.",
+      "세계 농산물 시장의 가격과 생산 구조 등에 미치는 영향력이 적다."
+    ],
+    정답: 4,
+    해설: "다국적 농업 기업은 농작물의 생산·유통·가공에 이르는 전 과정에서 세계적 차원의 시스템을 형성하고 있어 세계 농산물 시장의 가격과 생산 구조, 소비에 많은 영향을 미치고 있다."
+  },
+
+  /* ── 농업 생산 구조의 변화 ── */
+  {
+    카테고리: '구조변화',
+    지문: "다음과 같은 변화가 나타나는 원인으로 가장 적절한 것은?",
+    지도: [{ 파일: "img/09-01-photo-kansas-farmland.png" }],
+    설명박스: ["미국 중서부 캔자스주는 대규모의 기업적 밀 재배 지역이었으나 최근 옥수수 수요가 증가하는 추세에 맞춰 빠르게 옥수수 지대로 변화하고 있다."],
+    보기: [
+      "친환경 농산물 수요가 증가하고 있다.",
+      "사료 작물의 소비량이 감소하고 있다.",
+      "전 세계적으로 육류 소비가 증가하고 있다.",
+      "다국적 농업 기업의 곡물 생산량이 늘어나고 있다.",
+      "생활 수준 향상으로 기호 작물의 수요가 줄어들고 있다."
+    ],
+    정답: 2,
+    해설: "전 세계적으로 육류 소비가 늘어나면서 밀 재배 면적이 감소하고 사료 작물인 옥수수의 재배 면적이 증가하고 있다."
+  },
+  {
+    카테고리: '구조변화',
+    지문: "㉠, ㉡에 들어갈 농작물을 옳게 연결한 것은?",
+    설명박스: ["열대 기후 지역에 위치한 베트남은 기온이 높고 강수량이 풍부하여 세계적인 ㉠ 생산국이었다. 그러나 기호 작물의 수요가 증가하면서 ㉡ 생산에 집중하기 시작하였다. 그 결과 2016년 브라질에 이어 세계 2위의 ㉡ 생산국이 되었다."],
+    보기: [
+      "㉠ 쌀 — ㉡ 커피",
+      "㉠ 쌀 — ㉡ 바나나",
+      "㉠ 밀 — ㉡ 커피",
+      "㉠ 밀 — ㉡ 기름야자",
+      "㉠ 옥수수 — ㉡ 바나나"
+    ],
+    정답: 0,
+    해설: "베트남은 대표적인 쌀 생산국이었으나 세계 곡물 시장에서 쌀의 가격 변동성이 커지고 기호 작물의 수요가 증가하면서 수익성이 좋은 커피를 생산하기 시작하였다. 그 결과 브라질에 이어 세계 2위의 커피 생산국이 되었으나, 커피 농장을 만드는 과정에서 열대림이 파괴되었고 다량의 화학 비료와 농약 사용 등으로 환경 문제를 겪는 등 부작용도 나타나고 있다."
+  },
+  {
+    카테고리: '구조변화',
+    지문: "농업 생산 구조의 변화에 대한 설명으로 옳지 않은 것은?",
+    보기: [
+      "기업적 농업의 발달로 농작물이 대량 생산된다.",
+      "한 종류의 곡물을 재배하는 농업 방식이 증가하고 있다.",
+      "세계 여러 국가가 농업 경쟁력을 높이기 위해 노력하고 있다.",
+      "가축의 사료가 되는 작물을 재배하기 위해 열대림을 목초지로 바꾸고 있다.",
+      "세계적인 쌀 생산 지역의 국가들이 커피, 바나나 같은 상품 작물을 재배하기 시작하였다."
+    ],
+    정답: 1,
+    해설: "기업적 농업으로 농작물이 대량 생산되어 저렴한 가격에 판매되면서, 소규모로 농작물을 생산하는 국가는 큰 타격을 입게 되었다. 그 결과 세계 여러 국가가 농업 경쟁력을 높이기 위해 한 종류의 곡물을 재배하는 농업에서 벗어나 원예 작물이나 기호 작물을 재배하는 등 농업 생산 방식에 변화를 보이고 있다."
+  },
+  {
+    카테고리: '구조변화',
+    지문: "다음과 같은 현상이 나타나게 된 이유로 옳은 것은?",
+    설명박스: ["기업적으로 밀 재배를 하는 지역에서 최근 옥수수나 콩을 재배하는 등 토지 이용의 변화가 나타나고 있다."],
+    보기: [
+      "지구의 연평균 기온이 증가하였기 때문에",
+      "콩에 대한 국제적 수요가 감소하였기 때문에",
+      "밀보다 옥수수나 콩의 수익성이 더 높기 때문에",
+      "바이오 에너지에 대한 관심이 감소하였기 때문에",
+      "산업화로 인해 농경지의 면적이 감소하였기 때문에"
+    ],
+    정답: 2,
+    해설: "최근 들어 기업적으로 밀을 재배하는 지역에서 옥수수나 콩을 재배하는 것은 밀보다 옥수수나 콩을 재배하는 것이 더 많은 수익을 가져다주기 때문이다."
+  },
+  {
+    카테고리: '구조변화',
+    지문: "최근 나타나는 농업 생산 구조의 변화에 대한 설명으로 옳은 것을 <보기>에서 고른 것은?",
+    설명박스: [
+      "&lt;보기&gt;<br>ㄱ. 원예 작물이나 기호 작물을 재배하는 경우가 늘어나고 있다.<br>ㄴ. 농업 경쟁력을 높이기 위해 한 종류의 곡물을 재배하는 농업이 발달하고 있다.<br>ㄷ. 최근 옥수수나 콩의 수익성이 떨어짐에 따라 밀을 재배하는 지역이 늘어나고 있다.<br>ㄹ. 남아메리카 지역에서는 가축 사료 작물을 재배하기 위해 열대림을 목초지로 바꾸고 있다."
+    ],
+    보기: ["ㄱ, ㄴ", "ㄱ, ㄹ", "ㄴ, ㄷ", "ㄴ, ㄹ", "ㄷ, ㄹ"],
+    정답: 1,
+    해설: "최근 기업적 농업의 발달로 소규모로 농작물을 생산하는 국가는 큰 타격을 받게 되었다. 그 결과 세계 여러 국가가 농업 경쟁력을 높이기 위해 한 종류의 곡물을 재배하는 농업에서 벗어나 원예 작물이나 기호 작물을 재배하는 경우가 늘어나고 있다(ㄱ). 또한 전 세계적으로 육류 소비가 늘어나면서 남아메리카 지역에서는 열대림을 목초지로 바꾸는 경우가 늘어나고 있다(ㄹ). 기업적으로 밀 재배를 하는 지역에서는 최근 수익성이 높은 옥수수나 콩을 재배하는 등의 토지 이용의 변화를 보이고 있다."
+  },
+  {
+    카테고리: '구조변화',
+    지문: "다음은 어떤 학생이 수업 시간에 학습한 내용을 정리한 것이다. 밑줄 친 ㉠~㉤ 중 옳지 않은 것은?",
+    지도: [{ 파일: "img/09-01-note-structure-change.png" }],
+    보기: ["㉠", "㉡", "㉢", "㉣", "㉤"],
+    정답: 3,
+    해설: "전 세계적으로 육류 소비가 늘어나면서 가축의 사료 작물인 옥수수와 콩의 수요가 증가하였고, 이로 인해 기업적으로 밀을 재배하던 지역에서도 옥수수나 콩을 재배하는 경우가 늘어나고 있다. 따라서 ㉣의 ‘옥수수와 콩 재배가 줄고 기업적 밀 재배 지역이 확대되고 있음’은 반대로 서술되어 옳지 않다."
+  },
+
+  /* ── 농작물 소비 특성의 변화와 영향 ── */
+  {
+    카테고리: '소비변화',
+    지문: "밑줄 친 ㉠~㉤ 중 옳지 않은 것은?",
+    설명박스: [
+      "농업의 세계화에 따라 오늘날 우리는 ㉠ <u>세계 각지에서 생산되는 다양한 농산물을 쉽게 구할 수 있게 되었다.</u> 외국산 농산물을 많이 수입하면 ㉡ <u>우리 식탁의 먹거리가 풍부해지지만</u> ㉢ <u>농산물 이동 과정에서 방부제를 사용하는 경우가 많아 안전성 문제가 제기</u>되기도 한다. 세계적으로 식단이 서구화되면서 ㉣ <u>식량 작물인 쌀의 소비 비중은 감소</u>하고 있다. 또한 ㉤ <u>채소, 과일의 소비량이 감소하여 채소와 과일을 생산하던 농경지가 상업 용지로 바뀌는 경우가 많다.</u>"
+    ],
+    보기: ["㉠", "㉡", "㉢", "㉣", "㉤"],
+    정답: 4,
+    해설: "농업의 세계화로 우리는 세계 각지에서 생산한 농산물을 쉽게 먹을 수 있게 되었다. 그러나 수입 과정에서 농산물의 부패를 막기 위해 사용한 화학 약품 때문에 안전성 문제가 제기되기도 한다. 패스트푸드를 많이 먹으면서 육류와 기호 작물의 소비가 증가하였으며, 이러한 식생활의 변화로 주곡 작물인 쌀의 소비는 줄어들고 있다. ㉤ 생활 수준이 향상되면서 채소, 과일, 육류의 소비량은 꾸준히 증가하고 있다."
+  },
+  {
+    카테고리: '소비변화',
+    지문: "최근 나타나는 농작물 소비 특성의 변화에 대한 옳은 설명을 <보기>에서 고른 것은?",
+    설명박스: [
+      "&lt;보기&gt;<br>ㄱ. 육류의 소비량이 감소하고 있다.<br>ㄴ. 채소와 과일의 소비량이 꾸준히 증가하고 있다.<br>ㄷ. 세계 각지에서 생산된 다양한 과일이나 곡물을 접하는 경우가 늘어났다.<br>ㄹ. 생활 수준의 향상에 따라 다른 작물 대비 쌀 소비 비중이 늘어나고 있다."
+    ],
+    보기: ["ㄱ, ㄴ", "ㄱ, ㄷ", "ㄴ, ㄷ", "ㄴ, ㄹ", "ㄷ, ㄹ"],
+    정답: 2,
+    해설: "ㄱ. 생활 수준의 향상으로 과일, 채소, 육류의 소비량은 꾸준히 증가하고 있다. ㄹ. 패스트푸드를 비롯한 음식 문화의 보편화로 식량 작물인 쌀의 소비 비중은 감소하고 있다. 따라서 ㄴ, ㄷ이 옳은 설명이다."
+  },
+  {
+    카테고리: '소비변화',
+    지문: "최근 농작물 소비 특성의 변화 및 영향으로 옳지 않은 것은?",
+    보기: [
+      "소비자들이 다양한 농산물을 구매할 수 있다.",
+      "식량 작물인 쌀의 소비 비중이 증가하고 있다.",
+      "육류와 옥수수, 커피 등의 소비가 증가하고 있다.",
+      "국내 농산물의 수요가 감소하여 피해 농가가 발생할 수 있다.",
+      "농산물의 생산 및 유통 과정에서 농약과 방부제가 사용되어 안전성 문제가 제기된다."
+    ],
+    정답: 1,
+    해설: "최근 농업의 세계화에 따라 세계 각지에서 생산되는 다양한 농산물을 쉽게 접할 수 있게 되었다. 또한 생활 수준이 향상되면서 채소, 과일, 육류의 소비량은 계속 늘고 있으며, 패스트푸드를 비롯한 음식 문화의 보편화로 식량 작물인 쌀의 소비 비중은 감소하고 있다."
+  },
+  {
+    카테고리: '소비변화',
+    지문: "다음 그래프는 필리핀의 쌀 무역액 변화를 나타낸 것이다. 이에 대한 설명으로 옳지 않은 것은?",
+    지도: [{ 파일: "img/09-01-chart-philippines-rice.jpg" }],
+    보기: [
+      "1980년대에는 쌀 수출국이었다.",
+      "1990년대부터 쌀 수입액이 증가하고 있다.",
+      "1990년대부터 농경지의 면적은 감소했을 것이다.",
+      "1990년대부터 쌀을 재배하는 인구는 증가했을 것이다.",
+      "국제 곡물 가격이 폭등하면 필리핀의 국가 경제는 크게 흔들릴 것이다."
+    ],
+    정답: 3,
+    해설: "필리핀은 원래 쌀을 수출하던 나라였으나 1990년대부터 시작된 산업화의 바람을 타고 농업에 대한 지원을 줄이게 되었다. 그 결과 필리핀의 농지는 공업 지역과 주거 지역으로 바뀌었고 필리핀은 세계에서 쌀을 가장 많이 수입하는 나라 가운데 하나가 되었으며, 2008년에는 곡물 가격이 폭등하면서 국가 경제 전체가 흔들리기도 하였다. 따라서 쌀을 재배하는 인구는 증가한 것이 아니라 감소했을 것이다."
+  },
+  {
+    카테고리: '소비변화',
+    지문: "표는 농업의 세계화가 소비 지역에 미친 영향을 정리한 것이다. 밑줄 친 ㉠~㉤ 중 옳지 않은 것은?",
+    설명박스: [
+      "<b>긍정적 영향</b><br>㉠ <u>다양한 농산물을 쉽게 접할 수 있음</u><br>㉡ <u>식탁의 먹을거리가 풍성해짐</u><br>㉢ <u>식량 자급률이 높아짐</u>",
+      "<b>부정적 영향</b><br>㉣ <u>수입 농산물에 사용된 방부제 등의 안전성 문제가 제기됨</u><br>㉤ <u>국내 농산물 수요가 감소함</u>"
+    ],
+    보기: ["㉠", "㉡", "㉢", "㉣", "㉤"],
+    정답: 2,
+    해설: "농업의 세계화로 값싼 외국 농산물의 수입이 늘면서 우리나라의 식량 자급률은 오히려 낮아졌다. 따라서 ㉢ ‘식량 자급률이 높아짐’은 옳지 않다. 소비 지역에서는 다양한 농산물을 쉽게 접하고 식탁이 풍성해지는 긍정적 영향이 있는 반면, 방부제 등의 안전성 문제와 국내 농산물 수요 감소 같은 부정적 영향이 나타난다."
+  },
+  {
+    카테고리: '소비변화',
+    지문: "농업의 세계화에 따른 변화 및 영향에 대한 설명으로 옳지 않은 것은?",
+    보기: [
+      "채소와 육류의 소비량은 꾸준히 증가하고 있다.",
+      "세계 각지에서 생산된 농산물을 쉽게 구할 수 있다.",
+      "옥수수 재배 지역이 밀 재배 지역으로 바뀌고 있다.",
+      "식단의 서구화로 기호 작물의 수요가 증가하고 있다.",
+      "농산물 수입 과정에서 사용한 방부제 때문에 안전성 문제가 제기되기도 한다."
+    ],
+    정답: 2,
+    해설: "전 세계적으로 육류 소비가 늘면서 가축의 사료 작물인 옥수수나 콩의 수요도 증가하고 있다. 이에 따라 기업적 밀 재배 지역이 최근 수익성이 높은 옥수수 재배지로 바뀌는 등 토지 이용의 변화가 나타나고 있다. 즉 옥수수 재배 지역이 밀 재배 지역으로 바뀌는 것이 아니라 그 반대이다."
+  },
+
+  /* ── 우리나라의 곡물 자급률 ── */
+  {
+    카테고리: '자급률',
+    지문: "㉠에 들어갈 작물로 옳은 것은?",
+    지도: [{ 파일: "img/09-01-chart-grain-by-crop-2024.jpg" }],
+    설명박스: ["우리나라는 ㉠ 을/를 제외한 주요 곡물을 대부분 수입에 의존하고 있다. 우리나라의 곡물 자급률은 2024년 기준 21.6%로 매우 낮은 편이다."],
+    보기: ["쌀", "콩", "밀", "보리", "옥수수"],
+    정답: 0,
+    해설: "2024년 기준 품목별 자급률은 쌀 96.0%, 콩 37.4%, 보리 22.0%, 옥수수 4.3%, 밀 1.5%이다. 우리나라는 수입에 의존하는 다른 곡물들에 비해 쌀의 자급률이 높은 편이다."
+  },
+  {
+    카테고리: '자급률',
+    지문: "자료와 같은 상황이 나타나게 된 원인으로 옳은 것을 <보기>에서 고른 것은?",
+    지도칸수: 1,
+    지도: [
+      { 파일: "img/09-01-chart-grain-by-crop-2024.jpg" },
+      { 파일: "img/09-01-chart-grain-trend-2024.jpg" }
+    ],
+    설명박스: [
+      "우리나라는 쌀을 제외한 주요 곡물을 대부분 수입에 의존하고 있다. 우리나라의 곡물 자급률은 2024년 기준 21.6%로 매우 낮은 편이다.",
+      "&lt;보기&gt;<br>ㄱ. 농산물 무역 장벽의 강화<br>ㄴ. 해외에서 생산된 값싼 농산물의 수입 증가<br>ㄷ. 대규모 농업 기업이 생산한 농작물의 수입 감소<br>ㄹ. 육류 소비 증가에 따른 가축 사료 작물의 수요 증가"
+    ],
+    보기: ["ㄱ, ㄴ", "ㄱ, ㄷ", "ㄴ, ㄷ", "ㄴ, ㄹ", "ㄷ, ㄹ"],
+    정답: 3,
+    해설: "세계 무역 기구(WTO) 출범과 자유 무역 협정(FTA) 체결 확대에 따라 해외에서 생산된 값싼 농산물의 수입이 증가하면서 우리나라 농작물의 가격 경쟁력이 낮아지고 있다. 또한 육류 소비 증가에 따른 가축 사료 작물의 수요 증가로 옥수수나 콩 등 사료 작물의 수입이 증가함에 따라 곡물 자급률이 낮아지고 있다."
+  },
+  {
+    카테고리: '자급률',
+    지문: "자료와 같은 상황이 지속되었을 때 나타날 수 있는 현상으로 가장 적절한 것은?",
+    지도칸수: 1,
+    지도: [
+      { 파일: "img/09-01-chart-grain-by-crop-2024.jpg" },
+      { 파일: "img/09-01-chart-grain-trend-2024.jpg" }
+    ],
+    보기: [
+      "식량 안보가 높아질 것이다.",
+      "쌀의 생산량이 증가할 것이다.",
+      "국제 곡물 시장 변화에 큰 영향을 받지 않을 것이다.",
+      "해외 농산물 가격이 국내 경제에 미치는 영향이 작아질 것이다.",
+      "기후 변화 등 곡물 생산에 차질이 생기면 곡물 파동을 겪을 수 있다."
+    ],
+    정답: 4,
+    해설: "우리나라는 쌀을 제외한 대부분의 곡물을 수입에 의존하여 곡물 자급률이 낮은 편이다. 그렇기 때문에 국제 곡물 시장의 작은 변화에도 쉽게 흔들리며, 만약 기후 변화 등으로 곡물 생산에 차질이 생기면 곡물 파동이 발생하여 식량 부족 위기에 직면할 우려가 크다."
+  },
+  {
+    카테고리: '자급률',
+    지문: "그래프는 우리나라 곡물 자급률을 나타낸 것이다. 이에 대한 옳은 분석 및 추론을 <보기>에서 고른 것은?",
+    지도칸수: 1,
+    지도: [
+      { 파일: "img/09-01-chart-grain-by-crop-2024.jpg" },
+      { 파일: "img/09-01-chart-grain-trend-2024.jpg" }
+    ],
+    설명박스: [
+      "&lt;보기&gt;<br>ㄱ. 옥수수와 밀의 소비는 꾸준히 감소하고 있다.<br>ㄴ. 국제 곡물 시장의 변화에 큰 영향을 받지 않을 것이다.<br>ㄷ. 쌀을 제외한 주요 곡물의 대부분을 수입에 의존하고 있다.<br>ㄹ. 기후 변화 등으로 곡물 생산에 차질이 생기면 식량 부족 위기를 겪을 수 있다."
+    ],
+    보기: ["ㄱ, ㄴ", "ㄱ, ㄹ", "ㄴ, ㄷ", "ㄴ, ㄹ", "ㄷ, ㄹ"],
+    정답: 4,
+    해설: "우리나라는 쌀을 제외한 보리, 밀, 옥수수 등 주요 곡물을 대부분 수입에 의존하기 때문에 곡물 생산에 차질이 생기면 식량 부족 위기에 직면할 우려가 있다. 또한 자급률이 낮기 때문에 국제 곡물 시장의 작은 변화에도 쉽게 흔들릴 수 있다."
+  },
+  {
+    카테고리: '자급률',
+    지문: "그래프는 우리나라의 식량 자급률을 나타낸 것이다. 이를 보고 옳게 분석한 학생을 고른 것은?",
+    지도칸수: 1,
+    지도: [
+      { 파일: "img/09-01-chart-grain-by-crop-2024.jpg" },
+      { 파일: "img/09-01-chart-grain-trend-2024.jpg" },
+      { 파일: "img/09-01-dialog-students.png" }
+    ],
+    보기: ["가현, 나현", "가현, 다현", "나현, 다현", "나현, 라현", "다현, 라현"],
+    정답: 1,
+    해설: "식량 자급률이란 한 국가의 식량 소비량 중 국내에서 생산하고 공급하는 식량의 비율을 말한다. 그래프를 보면 다른 작물에 비해 쌀의 자급률은 비교적 높은 편이고(가현), 곡물 전체의 자급률은 해가 갈수록 낮아지고 있다(다현). 반면 옥수수와 밀은 대부분 수입에 의존하기 때문에 자급률이 매우 낮고 수입 비중은 계속 늘어 현재는 95% 이상을 수입하고 있다(나현은 옳지 않다). 또한 이와 같은 상황이 지속되어 식량 자급률이 낮은 상태가 유지된다면 우리나라는 국제 곡물 시장의 작은 변화에도 쉽게 흔들리게 되며, 세계 곡물 생산에 차질이 생기면 식량 부족 위기에 직면할 수도 있다(라현은 옳지 않다)."
+  }
+];
+
+function 셔플(원본배열) {
+  const a = 원본배열.slice();
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
+let 현재카테고리 = 카테고리목록[0].key;
+let 카테고리풀 = [];
+let 표시개수 = 0;
+let 제출됨 = [];
+let 정답수 = 0;
+
+const 카테고리개수 = key => 문제전체.filter(q => q.카테고리 === key).length;
+
+function 카테고리바그리기() {
+  const 칸 = document.getElementById('카테고리바');
+  칸.innerHTML = '';
+  카테고리목록.forEach(c => {
+    const b = document.createElement('button');
+    b.className = '카테고리' + (c.key === 현재카테고리 ? ' 활성' : '');
+    b.innerHTML = c.label + ' <b>' + 카테고리개수(c.key) + '</b>';
+    b.onclick = () => 카테고리선택(c.key);
+    칸.appendChild(b);
+  });
+}
+
+function 문제카드만들기(문제, idx) {
+  const 카드 = document.createElement('div');
+  카드.className = '문제카드';
+
+  const 머리 = document.createElement('div');
+  머리.className = '문제머리';
+
+  const 제출버튼 = document.createElement('button');
+  제출버튼.className = '제출버튼';
+  제출버튼.type = 'button';
+  제출버튼.textContent = '제출';
+
+  const 번호 = document.createElement('span');
+  번호.className = '번호';
+  번호.textContent = idx + 1;
+
+  const 지문 = document.createElement('div');
+  지문.className = '지문';
+  지문.textContent = 문제.지문;
+
+  머리.append(제출버튼, 번호, 지문);
+  카드.appendChild(머리);
+
+  if (문제.설명박스) {
+    const 박스 = document.createElement('div');
+    박스.className = '설명박스';
+    문제.설명박스.forEach(줄 => {
+      const p = document.createElement('p');
+      p.innerHTML = 줄;
+      박스.appendChild(p);
+    });
+    카드.appendChild(박스);
+  }
+
+  if (문제.지도 && 문제.지도.length) {
+    const 지도칸 = document.createElement('div');
+    지도칸.className = '지도래퍼';
+    const 목록 = document.createElement('div');
+    목록.className = '지도목록 ' + ((문제.지도칸수 || (문제.지도.length > 1 ? 2 : 1)) === 2 ? '칸2' : '칸1');
+    문제.지도.forEach(m => {
+      const fig = document.createElement('figure');
+      const img = document.createElement('img');
+      img.src = m.파일;
+      img.alt = m.라벨 ? m.라벨 + ' 자료' : '참고 자료';
+      img.loading = 'lazy';
+      fig.appendChild(img);
+      if (m.라벨) {
+        const cap = document.createElement('figcaption');
+        cap.textContent = m.라벨;
+        fig.appendChild(cap);
+      }
+      목록.appendChild(fig);
+    });
+    지도칸.appendChild(목록);
+    카드.appendChild(지도칸);
+  }
+
+  const 보기목록 = document.createElement('div');
+  보기목록.className = '보기목록';
+  const 보기라벨들 = [];
+
+  문제.보기.forEach((글, i) => {
+    const 라벨 = document.createElement('label');
+    라벨.className = '보기';
+
+    const 입력 = document.createElement('input');
+    입력.type = 'radio';
+    입력.name = '문제' + idx;
+    입력.value = i;
+    입력.className = '보기입력';
+
+    const 마커 = document.createElement('span');
+    마커.className = '보기마커';
+    마커.textContent = 동그라미[i];
+
+    const 글칸 = document.createElement('span');
+    글칸.className = '보기글';
+    글칸.textContent = 글;
+
+    라벨.append(입력, 마커, 글칸);
+    보기목록.appendChild(라벨);
+    보기라벨들.push(라벨);
+
+    입력.addEventListener('change', () => {
+      보기라벨들.forEach(l => l.classList.remove('선택됨'));
+      라벨.classList.add('선택됨');
+      제출버튼.classList.add('표시');
+      requestAnimationFrame(() => 제출버튼.classList.add('보임'));
+    });
+  });
+  카드.appendChild(보기목록);
+
+  const 결과 = document.createElement('div');
+  결과.className = '결과영역';
+  결과.hidden = true;
+
+  const 배지 = document.createElement('span');
+  배지.className = '결과배지';
+
+  const 정답줄 = document.createElement('p');
+  정답줄.className = '정답줄';
+
+  const 해설칸 = document.createElement('div');
+  해설칸.className = '해설';
+  const 해설제목 = document.createElement('b');
+  해설제목.textContent = '해설';
+  const 해설글 = document.createElement('p');
+  해설글.textContent = 문제.해설;
+  해설글.style.margin = '0';
+  해설칸.append(해설제목, 해설글);
+
+  결과.append(배지, 정답줄, 해설칸);
+  카드.appendChild(결과);
+
+  제출버튼.addEventListener('click', () => {
+    const 선택된 = 보기목록.querySelector('input:checked');
+    if (!선택된) return;
+    const 고른값 = parseInt(선택된.value, 10);
+    const 맞음 = 고른값 === 문제.정답;
+
+    보기라벨들.forEach((l, i) => {
+      l.querySelector('input').disabled = true;
+      if (i === 문제.정답) l.classList.add('정답');
+      else if (i === 고른값) l.classList.add('오답선택');
+    });
+    보기목록.classList.add('잠김');
+
+    배지.textContent = 맞음 ? '정답이에요' : '아쉬워요, 오답이에요';
+    배지.className = '결과배지 ' + (맞음 ? '맞음' : '틀림');
+    정답줄.innerHTML = '정답은 <b>' + 동그라미[문제.정답] + '번</b>이에요.';
+    결과.hidden = false;
+    제출버튼.remove();
+
+    if (!제출됨[idx]) {
+      제출됨[idx] = true;
+      if (맞음) 정답수++;
+      요약갱신();
+    }
+  });
+
+  return 카드;
+}
+
+function 카테고리선택(key) {
+  현재카테고리 = key;
+  카테고리풀 = 셔플(문제전체.filter(q => q.카테고리 === key));
+  표시개수 = Math.min(5, 카테고리풀.length);
+  제출됨 = new Array(표시개수).fill(false);
+  정답수 = 0;
+
+  카테고리바그리기();
+  const 목록칸 = document.getElementById('문제목록');
+  목록칸.innerHTML = '';
+  for (let i = 0; i < 표시개수; i++) 목록칸.appendChild(문제카드만들기(카테고리풀[i], i));
+  요약갱신();
+  scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function 문제더풀기() {
+  const 새표시개수 = Math.min(표시개수 + 5, 카테고리풀.length);
+  const 목록칸 = document.getElementById('문제목록');
+  for (let i = 표시개수; i < 새표시개수; i++) {
+    제출됨.push(false);
+    목록칸.appendChild(문제카드만들기(카테고리풀[i], i));
+  }
+  표시개수 = 새표시개수;
+  요약갱신();
+}
+
+function 요약갱신() {
+  const 제출수 = 제출됨.filter(Boolean).length;
+  document.getElementById('요약').innerHTML = '제출 <b>' + 제출수 + '</b> / ' + 표시개수 +
+    (제출수 ? '  ·  정답 <b>' + 정답수 + '</b>개' : '');
+  document.getElementById('다시풀기').hidden = 제출수 === 0;
+  document.getElementById('문제더풀기').hidden = !(제출수 === 표시개수 && 표시개수 < 카테고리풀.length);
+}
+
+document.getElementById('다시풀기').onclick = () => 카테고리선택(현재카테고리);
+document.getElementById('문제더풀기').onclick = 문제더풀기;
+
+카테고리선택(현재카테고리);
+</script>
+</body>
+</html>
